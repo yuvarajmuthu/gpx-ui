@@ -1,0 +1,36 @@
+{
+	"userId":"5c230bce29a45f23e0650c7f",
+	"userName":"yuvarajm1",
+	"userType":"publicUser",
+	"district":[{"district":"42", "type":"legislation"}, {"district":"18", "type": "congress"}],
+	"connections":[
+		{"groups":[{"entityId":"g0010"}]},
+		{"users":[{"entityId":"u002"}]},		
+		{"positions":[{"entityId":"p001"}]}
+	
+	],
+	"profile":
+	[
+		{
+		"profile_template_id":"upCongressLegislatorDefault",
+		"name":"Default",
+		"type":"public",
+		"properties" : ["firstName", "lastName", "imageUrl", "userName", "emailId", "bioguideImageUrl", "address"]
+		}
+
+	],	
+	"profileData":[
+		{
+		"user_profile_id":"up0010",
+		"profile_template_id":"upCongressLegislatorDefault",
+		"data" : [
+			{"firstName":"Yuvaraj"}, 
+			{"lastName":"Muthu"},
+			{"userName":"yuvarajm1"},
+			{"emailId":"testUser001@domain.com"},
+			{"bioguideImageUrl":"http://images.mentalfloss.com/sites/default/files/istock-511366776.jpg"},
+			{"address":"300 chatham park dr, Pittsburgh, PA 15220, USA"}
+			]
+		}
+	]
+}

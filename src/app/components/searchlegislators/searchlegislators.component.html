@@ -1,0 +1,38 @@
+<div class="address">
+  Address: <input [(ngModel)]="address" type="text" placeholder="Enter address here" />
+</div>
+
+<div>
+  <button type="button" (click)="loadStateData()" [ngClass]="{ 'btn btn-primary': stateData, 'btn btn-secondary': !stateData }">State Legislative Representatives</button>
+  <button type="button"  (click)="loadCongressData()" [ngClass]="{ 'btn btn-primary': congressData, 'btn btn-secondary': !congressData  }">Congress-House Representatives</button>
+</div>
+<!-- 
+      <label>State Legislative/Congress House Representatives</label> -->
+
+      <div>Your State: 
+        <button type="button" class="btn btn-primary">{{state}}</button>
+      </div>
+      
+      <div>{{districtLabel}} 
+        <button *ngFor="let congressDistrict of congressDistricts" type="button" class="btn btn-primary" (click)="gotoDistrict(congressDistrict)">{{congressDistrict.name}}</button>
+      </div>
+      <!--
+      <div>
+        <label>Find your legislators: </label>
+     
+        <input type="text" class="searchLegisBox" [(ngModel)]="ipZipcode" placeholder="Zipcode" />
+
+        <label class="btn btn-success" uncheckable (click)="getCongressLegislatorsByZip(ipZipcode)">Search</label>
+      </div>
+        -->
+
+
+      <div class="searchTip">{{searchTip}}</div>
+
+      <div>
+        <ul style="list-style-type:none">
+          <li *ngFor="let legislator of legislators" class="legisBoundary1">
+            <app-legislator [legislator]=legislator></app-legislator>
+          </li>
+        </ul>
+      </div>      

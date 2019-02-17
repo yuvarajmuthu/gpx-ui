@@ -1,0 +1,45 @@
+import { NgModule } from '@angular/core';
+import { Routes, RouterModule } from '@angular/router';
+
+import { TypeaheadComponent } from './components/typeahead/typeahead.component';
+import { SearchlegislatorsComponent } from './components/searchlegislators/searchlegislators.component';
+//import {UserModule} from './components/user/user.module';
+//import {UserComponent} from './components/user/user/user.component';
+import {RegisterComponent} from './components/security/register/register.component';
+import {LoginComponent} from './components/security/login/login.component';
+
+
+const routes: Routes = [
+  
+  //{path: "user", component: UserComponent},
+  {path: "user", loadChildren:'./components/user/user.module#UserModule' },
+  {path: "user/:id", loadChildren:'./components/user/user.module#UserModule' },
+  {path: "group", loadChildren:'./components/group/group.module#GroupModule' },
+  {path: "group/:id", loadChildren:'./components/group/group.module#GroupModule' },
+  //{path: "user/legis/:id", component: UserModule }, 
+  // { path: 'distrcit',      component: HeroDetailComponent },
+  // {
+  //   path: 'heroes',
+  //   component: HeroListComponent,
+  //   data: { title: 'Heroes List' }
+  // },
+  // { path: '',
+  //   redirectTo: '/heroes',
+  //   pathMatch: 'full'
+  // },
+  // { path: '**', component: PageNotFoundComponent }
+  { path: 'searchLegislator', component: SearchlegislatorsComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'login', component: LoginComponent },  
+  { path: '',   redirectTo: '/searchLegislator', pathMatch: 'full' },
+
+];
+
+@NgModule({
+  imports: [
+    RouterModule.forRoot(routes, 
+      { enableTracing: true } // <-- debugging purposes only
+     )],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }

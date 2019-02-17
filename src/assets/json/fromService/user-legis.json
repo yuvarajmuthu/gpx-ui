@@ -1,0 +1,60 @@
+{
+	"userId":"T000461",
+	"userType": "legislator",
+	"geoLocation": "",
+	"connections":[
+		{"groups":[{"entityId":"g0010"}]},
+		{"users":[{"entityId":"PAL000515", "connectionStatus":"REJECTED"}]},		
+		{"positions":[{"entityId":"p001"}]}
+	
+	],
+	"followers":[{"user_id":"u003"}],
+	"profile":
+	[
+		{
+		"profile_template_id":"upCongressLegislatorDefault",
+		"name":"Default",
+		"type":"legislator",
+		"properties" : []
+		},
+		{
+		"profile_template_id":"upCongressLegislatorExternal",
+		"name":"LegislatorCongress",
+		"type":"legislator",
+		"properties" : [
+			{"propId":"leg_id", "displayLabel":"Legislator External ID"},
+			{"propId":"full_name", "displayLabel":"Full Name"},
+			{"propId":"first_name", "displayLabel":"First Name"},
+			{"propId":"last_name", "displayLabel":"Last Name"},
+			{"propId":"district", "displayLabel":"District"},
+			{"propId":"party", "displayLabel":"Party"},
+			{"propId":"chamber", "displayLabel":"Chamber"},
+			{"propId":"state", "displayLabel":"State"}
+		 ]
+		},
+		{
+		"profile_template_id":"upCongressLegislatorCommitteeExternal",
+		"name":"Committee",
+		"type":"legislator",
+		"properties" : []
+		}
+
+	],	
+	"profileData":[
+		{
+		"user_profile_id":"up0010",
+		"profile_template_id":"upCongressLegislatorDefault",
+		"data" : []
+		},
+		{
+		"user_profile_id":"up0010",
+		"profile_template_id":"upCongressLegislatorExternal",
+		"data" : []
+		},
+		{
+		"user_profile_id":"up0010",
+		"profile_template_id":"upCongressLegislatorCommitteeExternal",
+		"data" : []
+		}
+	]
+}

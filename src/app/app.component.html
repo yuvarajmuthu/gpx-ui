@@ -1,0 +1,179 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">GPX</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <!-- <div class="navbar-form">
+	        <div class="form-group">
+	          <app-typeahead></app-typeahead>
+	        </div>
+	        <button type="submit" class="btn btn-default glyphicon glyphicon-search" aria-hidden="true"></button>
+	      </div> -->
+        <nav class="navbar navbar-light bg-light">
+            <form class="form-inline">
+              <!-- <app-typeahead></app-typeahead>
+              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button> -->
+              <div class="input-group">
+                  <app-typeahead></app-typeahead>
+                  <!-- <div class="input-group-prepend">
+                      <span class="input-group-text" id="basic-addon1">@</span>
+
+                  </div> -->
+  
+                </div>
+            </form>
+          </nav>
+      </li>
+      <!-- <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Dropdown
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="#">Action</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li> -->
+    </ul>
+
+    <div class="col text-right">
+      <div ngbDropdown class="d-inline-block">
+        <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Create Page</button>
+        <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+          <button class="dropdown-item" (click)="createPage('District')">Create District</button>
+          <button class="dropdown-item" (click)="createPage('Legislator')">Create Legislator</button>
+          <button class="dropdown-item" (click)="createPage('User')">Create User</button>
+          <button class="dropdown-item" (click)="createPage('Party')">Create Party</button>
+        </div>
+      </div>
+    </div>
+
+    
+      <ul class="nav navbar-nav navbar-right">
+        <!--
+          <li><a href="#" class="glyphicon glyphicon-bell" aria-hidden="true">Notification</a></li>
+          -->
+          <li *ngIf="!isUserLogged" class="nav-item">
+            <a routerLink="/register" class="glyphicon glyphicon-user" aria-hidden="true">Register</a>
+          </li>
+          <li *ngIf="!isUserLogged" class="nav-item">
+            <a routerLink="/login" class="glyphicon glyphicon-user" aria-hidden="true">Login</a>
+          </li>       
+          <li *ngIf="isUserLogged" class="nav-item">
+            <a href="#" class="glyphicon glyphicon-user" aria-hidden="true" (click)="logout()">Logout</a>
+          </li>
+       </ul>   
+  </div>
+</nav>
+<!-- VIEW AREA -->
+
+<div class="container">
+
+    <div class="row">
+        <div class="col">
+           <ngb-tabset type="pills" (tabChange)="tabclick($event)">
+               <ngb-tab id="legislatorTab" title="Legislators">
+                 <!-- <ng-template ngbTabContent>
+                  <app-searchlegislators></app-searchlegislators>
+                 </ng-template> -->
+               </ngb-tab>
+               <ngb-tab id="socialTab" title="Social">
+                 <!-- <ng-template ngbTabTitle><b>Fancy</b> title</ng-template>
+                 <ng-template ngbTabContent>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid.
+                   <p>Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table
+                   craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl
+                   cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia
+                   yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean
+                   shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero
+                   sint qui sapiente accusamus tattooed echo park.</p>
+                 </ng-template> -->
+               </ngb-tab>
+               <ngb-tab id="constitutionTab" title="Constitution">
+                <!-- <ng-template ngbTabContent>
+                 <app-searchlegislators></app-searchlegislators>
+                </ng-template> -->
+              </ngb-tab>
+
+           </ngb-tabset>      
+<!-- 
+         <ngb-tabset type="pills" (tabChange)="tabclick($event)">
+           <ngb-tab id="legislatorTab" title="Legislators">
+               <template ngbTabTitle>title</template>
+               <template ngbTabContent><p>content</p></template>
+           </ngb-tab>
+
+           <ngb-tab id="socialTab" title="Social">
+               <template ngbTabTitle>title1</template>
+               <template ngbTabContent><p>content1</p></template>                
+           </ngb-tab>
+
+           <ngb-tab title="Parties" (select)="clickTab('Parties')">
+           </ngb-tab>
+           <ngb-tab title="Constituency/District Profile" (select)="clickTab('District')"> 
+           </ngb-tab>
+          <ngb-tab title="Party Profile" (select)="clickTab('Party')">             
+          </ngb-tab>              
+          <ngb-tab title="User Profile" (select)="clickTab('User')">             
+          </ngb-tab>
+          <ngb-tab title="MyCircle" (select)="clickTab('mycircle')">
+          Upcoming Election
+          Polling station             
+          </ngb-tab>              
+         </ngb-tabset> -->
+
+       </div>
+       <!-- <div class="col text-right">
+          <div ngbDropdown class="d-inline-block">
+            <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Create Page</button>
+            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+              <button class="dropdown-item">Create District</button>
+              <button class="dropdown-item">Create Legislator</button>
+              <button class="dropdown-item">Create User</button>
+              <button class="dropdown-item">Create Party</button>
+            </div>
+          </div>
+        </div> -->
+<!-- 
+       <div class="btn-group" dropdown class="col-md-4">
+         <button dropdownToggle type="button" class="btn add btn-warning dropdown-toggle">
+           <span class="glyphicon glyphicon-plus"></span>
+           Create Page
+         </button>
+
+         <ul dropdownMenu class="dropdown-menu" role="menu">
+           <li role="menuitem">
+             <a class="dropdown-item" (click)="createPage('District')">Create District</a>
+           </li>
+
+           <li role="menuitem">
+             <a class="dropdown-item" (click)="createPage('Legislator')">Create Legislator</a>
+           </li>                
+
+           <li role="menuitem">
+             <a class="dropdown-item" (click)="createPage('User')">Create User</a>
+           </li>                              
+
+           <li role="menuitem">
+             <a class="dropdown-item" (click)="createPage('Party')">Create Party</a>
+           </li>                                            
+         </ul>
+
+       </div>              -->
+
+       
+
+   </div> 
+
+ <!-- view area -->
+ <div class="wrapper">
+     <!-- <alert dismissOnTimeout="5000"></alert> -->
+
+     <router-outlet></router-outlet>
+ </div>
+
+</div>
