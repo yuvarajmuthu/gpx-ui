@@ -73,7 +73,7 @@ export class UserbannertemplateComponent extends AbstractTemplateComponent imple
   constructor(private legislatorsService1:LegislatorService, 
     private userService1:UserService, 
     private dataShareService1:DatashareService, private missionService1: ComponentcommunicationService) {
-      super(legislatorsService1, userService1, dataShareService1, missionService1);
+      super(legislatorsService1, dataShareService1, missionService1);
   
       missionService1.missionAnnounced$.subscribe(
       mission => {

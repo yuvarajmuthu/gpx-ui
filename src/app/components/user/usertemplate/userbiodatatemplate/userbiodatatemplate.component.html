@@ -1,15 +1,45 @@
-<div>Legislative Data:
-</div>
-      <div class="legisProfileData col-xs-12">
-       <table class="table">
+<!--
+<div>Legislative Data:</div>
 
-          <tbody>
-              <tr class="info" *ngFor="let displayProperty of displayProperties">
-                <td>{{displayProperty.displayLabel}}</td>
-                <td>{{legislator[displayProperty.propId]}}</td>
+<div class="biodata legisProfileData col-xs-12">
+  <table class="table">
 
-              </tr>
+    <tbody>
+        <tr class="info" *ngFor="let displayProperty of displayProperties">
+          <td>{{displayProperty.displayLabel}}</td>
+          <td>{{legislator[displayProperty.propId]}}</td>
 
-          </tbody>
-       </table>     
-      </div> 
+        </tr>
+
+    </tbody>
+  </table>     
+</div> 
+{{profileInEditMode}} TEST
+-->
+<!--
+<form role="form">
+  <div class="form-group row" *ngFor="let displayProperty of displayProperties">
+
+      <label class="col-lg-3 col-form-label form-control-label">{{displayProperty.displayLabel}}</label>
+
+      <div class="col-lg-9">
+          <input *ngIf="isProfileInEditMode" class="form-control" type="text" value="{{legislator[displayProperty.propId]}}"> 
+          <label *ngIf="!isProfileInEditMode" class="col-form-label form-control-label">{{legislator[displayProperty.propId]}}</label> 
+        </div>
+
+  </div>
+</form>
+-->
+<form [formGroup]="biodataTemplateForm"> 
+  <div class="form-group row" *ngFor="let displayProperty of displayProperties">
+
+      <label class="col-lg-3 col-form-label form-control-label">{{displayProperty.displayLabel}}</label>
+
+      <div class="col-lg-9">
+          <input *ngIf="isProfileInEditMode" class="form-control" [formControlName]="displayProperty['propId']" type="text" value="{{legislator[displayProperty.propId]}}"> 
+          <label *ngIf="!isProfileInEditMode" class="col-form-label form-control-label">{{legislator[displayProperty.propId]}}</label> 
+        </div>
+
+  </div>
+  <button class="btn btn-primary" (click)="getDisplay()">Display</button>
+</form>

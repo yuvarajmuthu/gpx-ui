@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 //import { NgbTabset } from '@ng-bootstrap/ng-bootstrap';
@@ -11,17 +11,19 @@ import {UserService} from './services/user.service';
 import { AlertService } from './services/alert.service';
 import { AuthenticationService } from './services/authentication.service';
 
+import { User } from '../app/models/user';
+
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   //public tabSet: NgbTabset;
 
   title = 'gpx-ui';
-  isUserLogged:boolean = false;
+  isUserLogged:boolean;
 
   constructor(private  router: Router, 
     private missionService: ComponentcommunicationService, 
@@ -34,6 +36,17 @@ export class AppComponent {
       console.log("Alert message received " + mission);
     });
     
+    dataShareService.getCurrentUserObservable().subscribe(
+      data => {
+      console.log("Change in User object, in app.componen ");
+      if(data && (Object.keys(data).length > 0) && localStorage.getItem('currentUserToken')){
+        data.token = localStorage.getItem('currentUserToken');
+        this.isUserLogged = true;
+      }else{
+        this.isUserLogged = false;
+      }
+    });
+
     missionService.loginChanged$.subscribe(
       data => {
         console.log("Received data from missionService.loginChanged$.subscribe ", data);
@@ -41,12 +54,22 @@ export class AppComponent {
     });
 
     //SHOULD BE PART OF LOGIN PROCESS
+    /*
     this.userService.getUserData(this.dataShareService.getCurrentUserId(), false).subscribe(
         data => {
           this.dataShareService.setCurrentUser(data);
-          console.log("this.dataShareService.getCurrentUser() " + JSON.stringify(this.dataShareService.getCurrentUser()));  
+          //console.log("this.dataShareService.getCurrentUser() " + JSON.stringify(this.dataShareService.getCurrentUser()));  
         }
     );
+    */
+  }
+  
+  ngOnInit() {
+    if(localStorage.getItem('currentUserToken')){
+      let user = new User();
+      user.token = localStorage.getItem('currentUserToken');
+      this.dataShareService.setCurrentUser(user);
+    }
   }
 
   clickTab(event: String){
@@ -95,18 +118,18 @@ export class AppComponent {
       }else if("constitutionTab" === evt.nextId){
         this.router.navigate(['group']);
       }
-      // else if("constitutionTab" === evt.nextId){
-      //   this.router.navigate(['user/external']);
-      // }
+      else if("socialTab" === evt.nextId){
+       this.router.navigate(['news']);
+      }
     }
   }
 
   logout() {
     //    this.loading = true;
         this.authenticationService.logout();
-        this.missionService.loginChanged(false);
-        this.alertService.success('Logout successful', true);                    
-        this.router.navigate(['/']);
+        //this.missionService.loginChanged(false);
+        //this.alertService.success('Logout successful', true);                    
+        //this.router.navigate(['/']);
         
         // this.authenticationService.login(this.model)
         //     .subscribe(

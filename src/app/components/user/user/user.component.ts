@@ -1,4 +1,4 @@
-import {Component, ViewContainerRef, ViewChild, ElementRef, Renderer, ChangeDetectorRef, ComponentRef, Input, OnInit} from '@angular/core';
+import {Component, ViewContainerRef, ViewChild, ElementRef, Renderer, ChangeDetectorRef, ComponentRef, Input, OnInit, isDevMode} from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from "@angular/router";
 
 // import { TAB_DIRECTIVES } from 'ng2-bootstrap/components/tabs';
@@ -7,6 +7,7 @@ import { Router, ActivatedRoute, ParamMap } from "@angular/router";
 // import { DROPDOWN_DIRECTIVES } from 'ng2-bootstrap/components/dropdown';
 
 import { Legislator } from '../../../models/legislator';
+import {User} from '../../../models/user'; 
 
 //import {BannerGPXComponent} from './banner.component';
 
@@ -20,11 +21,11 @@ import {DatashareService} from '../../../services/datashare.service';
 import {UserService} from '../../../services/user.service';
 import { LegislatorService } from '../../../services/legislator.service';
 import { ComponentcommunicationService }     from '../../../services/componentcommunication.service';
-import { AlertService } from '../../../services/alert.service';
+import { AlertService } from '../../../services/alert.service'; 
 
 @Component({
   selector: 'app-user',
-  templateUrl: './user.component.html',
+  templateUrl: './user1.component.html',
   styleUrls: ['./user.component.css']
 })
 export class UserComponent implements OnInit {
@@ -35,7 +36,7 @@ export class UserComponent implements OnInit {
 	public isCollapsed:boolean = false;
 	public isCMCollapsed:boolean = false;
 	public isPartiesCollapsed:boolean = false;
-
+private isProfileEditMode:boolean = false;
 	public electedPersonsOld=[];
   public electedPersons:Array<Legislator>;
 	public contestedPersons=[];
@@ -45,14 +46,31 @@ export class UserComponent implements OnInit {
   private componentRef: ComponentRef<{}>;
   private userData = {};
   private viewingUser={};  
+  private firstName;
+  private lastName;
   public profilesTemplates = [];
   public profilesData = [];
   public isLegislator = false;
   operation:string = "";
+  profileImage:string="";
+  profileSmImage:any;
+  isImageLoading:boolean = false;
 
   activities:number = 0;  
       //private populationComponent: TemplatePopulationComponent;
   profileEditOption:string;
+
+  following:boolean = false;
+  requestedToFollow:boolean = false;
+  followRequestRejected:boolean = false;
+  currentUser:User = null;
+  loggedUser:User = null;
+  postFormData:FormData;
+  editLabel:string = null;
+  followersCount:string = null;
+  followers:User[] = [];
+  selectedProfileSmImage : File;
+  profileSmImageChanged : boolean = false;
 
   constructor(//private  router: Router,
     private route: ActivatedRoute,
@@ -64,8 +82,16 @@ export class UserComponent implements OnInit {
     //private peopleService: PeopleService, 
     //private partyService: PartyService, 
     private datashareService:DatashareService) {  
+      this.currentUser = this.datashareService.getCurrentUser();  
       
+      missionService.userProfileEditChanged$.subscribe(
+        mission => {
+          console.log("Received edit-save Profile message " + mission);
+          if(!mission){
+            this.saveProfile();
+          }
 
+        });
 
   }
   
@@ -92,8 +118,10 @@ export class UserComponent implements OnInit {
 
   ngOnInit(){
     this.profileEditOption = this.getPermission(); 
-
+    this.loggedUser = this.datashareService.getCurrentUser();
+    //this.editProfile();
     let id = this.route.snapshot.paramMap.get('id');
+    this.editLabel = "Edit Profile";
 
     if(id){
       if(id == "CREATE"){
@@ -117,6 +145,7 @@ export class UserComponent implements OnInit {
       if(this.profileUserId == 'external'){
         this.isLegislator = true; // may not be required
         this.viewingUser['isLegislator'] = true;
+        //*** LEGISLATOR SELECTED FROM SEARCH SCREEN IS SET AS VIEWINGUSER - IN LEGISLATOR.COMPONENT ***/
         this.viewingUser['externalData'] = this.datashareService.getViewingUser();
         this.profileUserId = this.viewingUser['externalData']['id'];
         this.viewingUser['external'] = true;
@@ -134,14 +163,21 @@ export class UserComponent implements OnInit {
       //the user that is being viewed
       //this.dataShareService.setViewingUserId(this.profileUserId);
       
-
+      this.getRelationStatus(this.loggedUser.username, this.profileUserId);
+      this.getFollowersCount(this.profileUserId);
+      this.getFollowers(this.profileUserId);
+      
+      
       this.userService.getUserData(this.viewingUser['userId'], this.viewingUser['external']).subscribe(
           data => {
             this.userData = data;
             console.log("User data from service: ", this.userData);
 
-            //this.connections = this.userData['connections'];
+            //this may not be required as getRelationStatus() can be used
             this.viewingUser['connections'] = this.userData['connections'];
+
+
+
             this.viewingUser['followers'] = this.userData['followers'];
             // console.log("User connections: ", this.connections);
             // if(this.connections){
@@ -149,8 +185,17 @@ export class UserComponent implements OnInit {
                
             //   }
             // }
+            if(this.viewingUser['external']){
+              if(isDevMode()){
+                this.profileSmImage = "assets/images/temp/user-avatar.jpg";
+              }else{
+                this.profileSmImage = this.userData["photo_url"];
+              }
+              this.profileSmImage = this.userData["photo_url"];
 
-     
+            }else{
+              this.getProfileSmImage(this.viewingUser['userId']);
+            } 
             //getting the available profile templates for this user type - publicUser
             this.profilesTemplates = this.viewingUser['profileTemplates'] = this.userData['profile'];
             console.log("profile templates: ", this.profilesTemplates);
@@ -165,6 +210,12 @@ export class UserComponent implements OnInit {
               console.log("loading template component: ", profileData['profile_template_id']);
               //this.templateType.push(profileData['profile_template_id']);
               compTypes.push(profileData['profile_template_id']); 
+              if(profileData['profile_template_id'] === "upCongressLegislatorExternal"){
+                let profileItemData = profileData['data'][0];
+                this.firstName = profileItemData['first_name'];
+                this.lastName = profileItemData['last_name'];
+
+              }
             }
 
             if(compTypes.length > 0){
@@ -178,6 +229,75 @@ export class UserComponent implements OnInit {
       );
     }
 
+  }
+
+  getProfileSmImage(userId:string) {
+  this.isImageLoading = true;
+  this.userService.getImage(userId).subscribe(data => {
+    this.createImageFromBlob(data);
+    this.isImageLoading = false;
+  }, error => {
+    this.isImageLoading = false;
+    console.log(error);
+  });
+} 
+
+createImageFromBlob(image: Blob) {
+  let reader = new FileReader();
+  reader.addEventListener("load", () => {
+    this.profileSmImage = reader.result;
+  }, false);
+
+  if (image) {
+    reader.readAsDataURL(image);
+  }
+}
+
+
+  editProfile(){
+    //loggedin? and edited?, then set edit as true
+    //loggedin? and not edited?, then set edit as false
+    
+    let edit:boolean = false;
+    if(this.editLabel === "Edit Profile"){//Enabling to update the profile
+      edit = true;
+    }else{//Saving profile
+      edit = false;
+    }
+    
+    this.datashareService.editProfile(edit);
+    
+    if(edit){
+      this.editLabel = "Save";
+    }else{
+      this.editLabel = "Edit Profile";
+    }
+    this.missionService.userProfileChanged(edit);
+
+  }
+
+  isProfileEditable(){
+    return this.datashareService.isProfileEditable() && this.loggedUser;//and     //logged in?
+  }
+
+  isUserLogged(){
+    return (this.loggedUser != null && this.loggedUser['token'] != null); // and token expired ?
+  }
+
+  onProfileSmImageSelected(event) {
+    console.log("file object ", event);
+    let reader = new FileReader();
+//      let formData = new FormData();  
+
+    
+    if (event.target.files && event.target.files[0]) {
+        this.selectedProfileSmImage = event.target.files[0];
+        reader.readAsDataURL(this.selectedProfileSmImage);
+        reader.onload = (event) => {
+          this.profileSmImage = event.target["result"]; 
+        }
+        this.profileSmImageChanged = true;
+    } 
   }
 
   loadProfileTemplates(operation:string){
@@ -209,15 +329,174 @@ export class UserComponent implements OnInit {
     );
   }
 
-
   saveProfile(){
-      console.log("Saving Profile");
-      this.missionService.announceMission("{'districtID':'d001'}");
-      //console.log("printing female count " + this.populationComponent.femaleCount);
-      //this.populationComponent.getData();  
+    console.log("Saving user.component Profile");
+    /*
+    this.missionService.announceMission("{'districtID':'d001'}");
+    this.data["profile_template_id"] = this.id;
+    this.data["user_id"] = this.profileUserId;
+    this.data["data"] = this.getData();
+
+    console.log("Data " + JSON.stringify(this.data));
+    */
+   //if image got change, submit that image
+   if(this.profileSmImageChanged){
+    const uploadFormData = new FormData();
+    uploadFormData.append("file", this.selectedProfileSmImage, this.selectedProfileSmImage.name);
+    uploadFormData.append("user", JSON.stringify(this.viewingUser));
+
+    this.userService.updateUserSmProfileImage(uploadFormData)
+    .subscribe(data => {
+
+    });
+   }
+  }
+
+  getData():string{
+    let data = {};
+    data["firstName"] = this.firstName;
+    data["lastName"] = this.lastName;
+
+
+    let dataString:string = JSON.stringify(data);
+    console.log("TemplateIntroductionComponent data " + dataString);
+    return dataString;
+  }
+
+  
+  followEntity(){
+
+    var followURequest = {};
+    var sourceEntity={};
+    var targetEntity={}; 
+    
+    /*MAY NOT BE REQUIRED - BEGIN */
+    followURequest["userId"] = this.loggedUser.username;// this.datashareService.getCurrentUserId();
+    followURequest["connectionUserId"] = this.profileUserId;
+    /*MAY NOT BE REQUIRED - END */
+
+    followURequest["sourceEntityId"] = this.loggedUser.username;//this.datashareService.getCurrentUserId();
+    followURequest["sourceEntityType"] = "USER";
+    followURequest["targetEntityId"] = this.profileUserId;
+    
+    if(this.viewingUser['isLegislator']){
+      followURequest["targetEntityType"] = "LEGISLATOR";
+    }else{
+      followURequest["targetEntityType"] = "USER";
     }
+    followURequest["status"] = "REQUESTED";            
+    console.log("Profile data " + JSON.stringify(followURequest));      
 
+    this.userService.followPerson(JSON.stringify(followURequest))
+    .subscribe(
+      (result) => {
+          console.log("followDistrict response " + result);
 
+          if(result.status == "REQUESTED"){
+            this.requestedToFollow = true;
+          }else if(result.status == "FOLLOWING"){
+            this.following = true;
+          }else if(result.status == "REJECTED"){
+            this.followRequestRejected = true; 
+          }
+
+        },
+      (err) => {
+        console.log("Error ", err);
+      });
+  }
+
+  getRelationStatus(entity:string, profileId:string){
+    this.userService.getRelationStatus(entity, profileId)
+    .subscribe(
+      (result) => {
+          console.log("getRelationStatus response " + result);
+
+          if(result == "REQUESTED"){
+            this.requestedToFollow = true;
+          }else if(result == "FOLLOWING"){
+            this.following = true;
+          }else if(result == "REJECTED"){
+            this.followRequestRejected = true; 
+          }
+
+        },
+      (err) => {
+        console.log("Error ", err);
+      });
+  }
+
+  getFollowersCount(profileId:string){
+    this.userService.getFollowersCount(profileId)
+    .subscribe(
+      (result) => {
+          console.log("getFollowersCount response " + result);
+          this.followersCount = result;
+
+        },
+      (err) => {
+        console.log("Error ", err);
+      });    
+  }
+
+  getFollowers(profileId:string){
+    this.userService.getFollowers(profileId)
+    .subscribe(
+      (result) => {
+          console.log("getFollowers response " + result);
+          this.followers = result;
+          console.log("getFollowers response " + this.followers);
+        },
+      (err) => {
+        console.log("Error ", err);
+      });    
+  }
+
+  //NOT USED
+  getRelation(entity:string, profileId:string){
+    this.requestedToFollow = false;
+    this.following = false;
+    this.followRequestRejected = false;
+    var isProfileRelated = false;
+
+    console.log("this.viewingUser['connections'].length ", this.viewingUser['connections'].length);
+
+    this.viewingUser['connections'].forEach(connection => {
+      if((entity === "user" && connection["users"]) ||
+         (entity === "group" && connection["groups"]) ||
+         (entity === "position" && connection["positions"])){
+
+        let connectedEntities = null;
+        if((entity === "user" && connection["users"])){
+          connectedEntities = connection["users"];
+         }else if((entity === "group" && connection["groups"])){
+          connectedEntities = connection["groups"];
+         }else if((entity === "position" && connection["positions"])){
+          connectedEntities = connection["positions"];
+         }
+        
+        connectedEntities.forEach(connectedEntity => {      
+          if(connectedEntity["entityId"] === profileId){
+            isProfileRelated = true;
+
+            if(connectedEntity["connectionStatus"] == "REQUESTED"){
+              this.requestedToFollow = true;
+            }else if(connectedEntity["connectionStatus"] == "FOLLOWING"){
+              this.following = true;
+            }else if(connectedEntity["connectionStatus"] == "REJECTED"){
+              this.followRequestRejected = true;
+            }
+
+          }
+
+          if(isProfileRelated){
+            //exit the for loop
+          }
+        });
+        //exit the for loop
+      }
+    });
+  }
 
   getPermission():string{
                 //console.log("calling getter");
@@ -232,6 +511,10 @@ export class UserComponent implements OnInit {
       this.profileEditOption = data;
   }
 
+  isEditable(){
+    //should be logged in
+    //additional Role ?
+  }
 
   allowed():boolean{
       let permission:boolean = this.datashareService.checkPermissions();

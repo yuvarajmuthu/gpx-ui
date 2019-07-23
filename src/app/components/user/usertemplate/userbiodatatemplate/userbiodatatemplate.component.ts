@@ -1,18 +1,20 @@
-import { Component, OnInit } from '@angular/core';
-
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
 import {AbstractTemplateComponent} from '../../abstractTemplateComponent';
 
 import {DatashareService} from '../../../../services/datashare.service';
 import {ComponentcommunicationService}     from '../../../../services/componentcommunication.service';
 import {UserService} from '../../../../services/user.service';
 import { LegislatorService } from '../../../../services/legislator.service';
+import { IfStmt } from '@angular/compiler';
+import { Legislator } from 'src/app/models/legislator';
 
 @Component({
   selector: 'app-userbiodatatemplate',
   templateUrl: './userbiodatatemplate.component.html',
   styleUrls: ['./userbiodatatemplate.component.css']
 })
-export class UserbiodatatemplateComponent extends AbstractTemplateComponent  implements OnInit{
+export class UserbiodatatemplateComponent extends AbstractTemplateComponent  implements OnInit{ 
   //userId = "u001";
   //legisId:string = "";
   
@@ -27,9 +29,12 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
   private userData = {};
   public profilesData = [];
   public profilesTemplates = [];
+  isProfileInEditMode:boolean = false;
   private templateProperties = [];
   private templateData = [];
-  
+  group:FormGroup;
+  biodataTemplateForm: FormGroup;
+
   //legislator: Legislator;
   //resultop:any;
   //keys = [];
@@ -79,22 +84,44 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
   constructor(private legislatorsService2:LegislatorService, 
     private userService2:UserService, 
     private dataShareService2:DatashareService, 
-    private missionService2: ComponentcommunicationService) {
+    private missionService2: ComponentcommunicationService,
+    private changeDetector : ChangeDetectorRef,
+    private fbuilder: FormBuilder) {
   
-      super(legislatorsService2, userService2, dataShareService2, missionService2);
+      super(legislatorsService2, dataShareService2, missionService2);
   
       console.log("constructor() userProfile.template");      
-  
+
+      //OBSOLETE?
       missionService2.missionAnnounced$.subscribe(
       mission => {
         console.log("Received save Profile message from parent for district " + mission);
   
         this.saveProfile();
       });
-  
+
+      missionService2.userProfileEditChanged$.subscribe(
+        data => {
+          console.log("Received user profile edit status " + data);
+          this.isProfileInEditMode = data;
+          this.changeDetector.detectChanges();
+
+          if(!data){//Save Profile
+            this.saveProfile();
+          }
+
+        });
+
       //this.loadTemplateData();  
       //OVERRIDE KEYS - CUSTOMIZED DISPLAY
       this.loadDisplayProperties();
+      let structForm = this.createFormGroup();
+      console.log("structForm ", structForm);
+      
+      //this.biodataTemplateForm = this.group = this.fbuilder.group(JSON.parse(structForm));
+      //this.biodataTemplateForm = this.group = this.fbuilder.group(structForm); 
+      //this.createFormGroup();
+      console.log("this.biodataTemplateForm ", this.biodataTemplateForm);
   
   
     }
@@ -107,7 +134,7 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
           this.displayProperties = profileTemplates['properties'];
           break;  
         }
-      }
+      } 
   
     }
   
@@ -162,13 +189,59 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
   
         return permission;
     }
-  
-    getData():string{
+
+    createFormGroup() {
+      this.biodataTemplateForm = this.fbuilder.group({});
+      let struct:string = "\"{";//"new FormGroup({";
+      this.displayProperties.forEach((element, index) => {
+        console.log('element[propId] ', element['propId'], ' this.legislator[element[propId]] ', this.legislator[element['propId']]);
+        this.biodataTemplateForm.setControl(element['propId'], new FormControl(this.legislator[element['propId']]));
+    
+    //    let control = new FormControl();
+        
+        if(index === this.displayProperties.length-1){//last item
+          struct = struct + element['propId'] + ": new FormControl()";
+        }else{
+          struct = struct + element['propId'] + ": new FormControl(),";
+        }
+        console.log("index " + index);
+
+      });
+//      struct = struct + "})";
+      struct = struct + "}\"";
+      //console.log("struct " + struct);
+      return struct;//JSON.parse(struct);
+/*
+      return new FormGroup({
+        personalData: new FormGroup({
+          email: new FormControl(),
+          mobile: new FormControl(),
+          country: new FormControl()
+         }),
+        requestType: new FormControl(),
+        text: new FormControl()
+      });
+      */
+    }
+    getDisplay(){
+      console.log("Object.assign({}, this.biodataTemplateForm.value) ", Object.assign({}, this.biodataTemplateForm.value));
+      const result: Legislator = Object.assign({}, this.biodataTemplateForm.value);
+      console.log("Legislator form ", result.first_name);
+
+    }
+    //GET TEMPLATE FORM DATA
+    //SHOULD GET FORM DATA, INSTEAD OF PREVIOUSLY LOADED STATIC OBJECT DATA
+    getData():string{ 
       let data = {};
-      data["firstName"] = this.firstName;
-      data["lastName"] = this.lastName;
+      //data["firstName"] = this.firstName;
+      //data["lastName"] = this.lastName;
   
-  
+      this.displayProperties.forEach(element => {
+        //console.log("Property ", element['propId']);
+        //console.log("Property value", this.legislator[element['propId']]);  
+        data[element['propId']] = this.legislator[element['propId']];
+      });
+
       let dataString:string = JSON.stringify(data);
       console.log("TemplateIntroductionComponent data " + dataString);
       return dataString;
@@ -176,11 +249,12 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
   
     saveProfile(){
       this.data["profile_template_id"] = this.id;
-      this.data["user_id"] = this.profileUserId;
+      this.data["user_id"] = this.profileUserId; // how about for user updating other passive profile ?
       this.data["data"] = this.getData();
-  
+
+
       console.log("Data " + JSON.stringify(this.data));
-  
+  //save
     }
   
   }

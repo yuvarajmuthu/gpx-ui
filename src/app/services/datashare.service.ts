@@ -1,4 +1,7 @@
 import { Injectable, OnChanges, ViewRef } from '@angular/core';
+import { Observable, of, BehaviorSubject } from 'rxjs';
+
+import { User } from './../models/user';
 
 @Injectable({
   providedIn: 'root'
@@ -8,14 +11,18 @@ export class DatashareService {
   public selected_permission:string='Viewer';
 
   public displayMode:boolean = false;
+  
+  private currentUserSubject = new BehaviorSubject<User>(new User()); 
+  private currentUserObservable = this.currentUserSubject.asObservable();
 
   //currentUserId will be set with logged in userid
   public currentUserId:string = 'yuvarajm1';//'u001'; 
-  public currentUser = {};
+  //public currentUser = {};
   
   public viewingUserId:string; //SHOULD BE DEPRECATED
   public viewingUser = {};
   public viewingDistrict = {};
+  public viewingEntity = {}; //can obsolete viewingUser / viewingDistrict
   
   public currentDistrictId:string = 'g0010';
   public selectedLegislatorId:string = 'g0010';
@@ -52,21 +59,27 @@ export class DatashareService {
     return component;
   } 
 
-
+//OBSOLETE
   getCurrentUserId():string{
    return this.currentUserId;
   }
 
+//OBSOLETE
   setCurrentUserId(userId:string){
    this.currentUserId = userId;
   }
-  
-  getCurrentUser():any{
-   return this.currentUser;
+
+  getCurrentUserObservable():any{
+   return this.currentUserObservable;
   }
 
-  setCurrentUser(user:any){
-   this.currentUser = user;
+  getCurrentUser():User{
+    return this.currentUserSubject.getValue();
+  }
+ 
+  setCurrentUser(user:User){
+   //this.currentUser = user;
+   this.currentUserSubject.next(user);
   }
 
   getViewingUserId():string{
@@ -126,6 +139,14 @@ export class DatashareService {
   	//console.log("setPermission() " + this.selected_permission);
 
   }
+
+  editProfile(data:boolean){
+    this.viewingEntity['isProfileEditMode'] = data;
+  }
+
+  isProfileEditable():boolean{
+    return this.viewingEntity['isProfileEditMode'];
+  } 
 
   checkPermissions():boolean {
       if(this.selected_permission == 'Editor') {

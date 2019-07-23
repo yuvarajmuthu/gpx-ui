@@ -41,7 +41,7 @@ export class UsercommitteetemplateComponent  extends AbstractTemplateComponent  
     private userService2:UserService, 
     private dataShareService2:DatashareService, private missionService2: ComponentcommunicationService) {
   
-      super(legislatorsService2, userService2, dataShareService2, missionService2);
+      super(legislatorsService2, dataShareService2, missionService2);
   
       console.log("constructor() userProfile.template");      
   

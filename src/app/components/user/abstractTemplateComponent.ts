@@ -1,6 +1,6 @@
 import {DatashareService} from '../../services/datashare.service';
 import {ComponentcommunicationService}     from '../../services/componentcommunication.service';
-import {UserService} from '../../services/user.service';
+//import {UserService} from '../../services/user.service';
 import { LegislatorService } from '../../services/legislator.service';
 
 import { Legislator } from '../../models/legislator';
@@ -24,7 +24,6 @@ export abstract class AbstractTemplateComponent {
     public viewingUser={};
     
     constructor(private legislatorsService:LegislatorService, 
-      private userService:UserService, 
       private dataShareService:DatashareService, 
       private missionService: ComponentcommunicationService) {
       this.viewingUser = this.dataShareService.getViewingUser();
@@ -34,7 +33,7 @@ export abstract class AbstractTemplateComponent {
         this.loadLegislator();
       } 
     }
-    
+
     getLegislator():Legislator{
       //this.loadLegislator();
       return this.legislator;
@@ -56,7 +55,7 @@ export abstract class AbstractTemplateComponent {
           }
       }
     
-      loadLegislator(): void {
+      loadLegislator(): void { 
         console.log("loadLegislator() userProfile.template AbstractTemplateComponent");   
     
     

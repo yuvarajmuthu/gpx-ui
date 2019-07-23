@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {HttpResponse} from "@angular/common/http";
+
 import { first } from 'rxjs/operators';
 
 import { AlertService } from '../../../services/alert.service';
@@ -62,9 +64,23 @@ login() {
   this.authenticationService.login(this.loginForm.value)
       .pipe(first())
       .subscribe(
-          data => {
-            this.componentcommunicationService.loginChanged(true);
-            this.alertService.success('Login successful', true);                    
+          () => {
+
+            //console.log("res.headers.get('Authorization') ", res.headers.get('Authorization'));
+            //localStorage.setItem('currentUserToken', res.headers.get('Authorization'));
+/*
+        let main_headers = {};
+        const keys = res.headers.keys();
+        let headers = keys.map(key => {
+          `${key}: ${res.headers.get(key)}`
+            main_headers[key] = res.headers.get(key)
+           }
+          );
+          console.log("JSON.stringify(main_headers) ", JSON.stringify(main_headers));
+*/
+
+           // this.componentcommunicationService.loginChanged(true);
+            //this.alertService.success('Login successful', true);                    
 
               this.router.navigate([this.returnUrl]);
           },

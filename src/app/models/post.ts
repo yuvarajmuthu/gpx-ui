@@ -9,9 +9,11 @@ export class Post {
 		public videoUrl:string,
 		public districtId:string,
 		public likedBy:string[],
-		public likedByCurrentUser:boolean
+		public likedByCurrentUser:boolean,
+		public messageType:string,
+		public imageFile:File
 	){}
-
+/*
 	static decodePost(json: JSON): Post {
 	  return {
 	    id:    json["_id"],
@@ -25,9 +27,11 @@ export class Post {
 	    //,likedBy:json["likedBy"],
 	    //likedByCurrentUser:json["likedByCurrentUser"]
 	    ,likedBy:["u00l"],
-	    likedByCurrentUser:true
+			likedByCurrentUser:true,
+			messageType:json["messageType"]
 	  };
 	}
+	*/
 }	
 
 interface PostJSON {

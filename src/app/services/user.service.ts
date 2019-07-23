@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, isDevMode } from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 
 import { Observable, of } from 'rxjs';
@@ -30,6 +30,15 @@ export class UserService extends AbstractService{
     private dataShareService:DatashareService) {
     super();
     this.serviceUrl = dataShareService.getServiceUrl() + "/api/social";
+    this.devMode = isDevMode();
+  }
+
+  getUserService():string{
+    return this.dataShareService.getServiceUrl() + "/user";
+  }
+  
+  getPostService():string{
+    return this.dataShareService.getServiceUrl() + "/post";
   }
 
   getUserData(userId:String, external:boolean):Observable<any> { 
@@ -46,7 +55,7 @@ export class UserService extends AbstractService{
 
     //legis represent legislator      
     if(external){  
-      url = '/assets/json/fromService/user-legis.json';
+      url = '/assets/json/fromService/user-legis.json';  
     }else{
       url = '/assets/json/fromService/user.json';
     }
@@ -91,7 +100,7 @@ export class UserService extends AbstractService{
     //                  .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
     return this.http.post(serviceUrl, request, this.httpOptions)
     .pipe(
-      map((response:Response) => response.json()),
+      //map((response:Response) => response.json()),
       tap(_ => this.log(`posted followPerson`)),
       catchError(this.handleError<any>(`Error in followPerson()`))
     );                 
@@ -105,7 +114,98 @@ export class UserService extends AbstractService{
 
   }
   */
-  getRelation(userId:string, districtId:string):Observable<any>{
+
+ getRelationStatus(userId:string, districtId:string):Observable<string>{
+  let serviceUrl = this.serviceUrl+"/getRelation";
+  //console.log("follow district user.service " + request + " this.serviceUrl " + serviceUrl);
+ //let bodyString = JSON.stringify(post); // Stringify payload
+  let headers      = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
+  //let myParams = new URLSearchParams();
+  let myParams = new HttpParams();
+  myParams.append('sourceEntityId', userId);
+  myParams.append('targetEntityId', districtId);
+  // let options       = new RequestOptions({ headers: headers, search:myParams }); // Create a request option
+
+  // return this.http.get() (serviceUrl, options) // ...using post request
+  //                  .map((res:Response) => res.json()) // ...and calling .json() on the response to return data
+  //                  .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+                   
+  // this.httpOptions = {
+  //                   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  //                 };
+
+  return this.http.get(serviceUrl, { responseType: 'text', params: {
+    sourceEntityId: userId,
+    targetEntityId: districtId
+  } });
+
+  //.pipe(
+  //  map(data => this.data = data),
+   // tap(_ => this.log(`fetched getRelation`)),
+   // catchError(this.handleError<any>(`Error in getRelation()`))
+  //);                
+}
+
+getFollowersCount(entityId:string):Observable<string>{
+  let serviceUrl = this.serviceUrl+"/getFollowersCount";
+
+  let headers      = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
+
+  return this.http.get(serviceUrl, { responseType: 'text', params: {
+    entityId: entityId
+  } });
+
+}
+
+getFollowers(entityId:string):Observable<any>{
+  let serviceUrl = this.serviceUrl+"/getFollowers";
+
+  let headers      = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
+  let myParams = new HttpParams();
+  myParams.append('entityId', entityId);
+/*
+  return this.http.get(serviceUrl, {params: myParams, headers: new HttpHeaders({ 'Content-Type': 'application/json' })})
+  .pipe(
+    //map((response:Response) => response.json()),
+    tap(_ => this.log(`fetched getRelation`)),
+    catchError(this.handleError<any>(`Error in getRelation()`))
+  );                
+*/
+
+  return this.http.get(serviceUrl, { responseType: 'json', params: {
+    entityId: entityId
+  } }).pipe(
+//    map((response:Response) => response.json()),
+    tap(_ => this.log(`fetched getFollowers`)),
+    catchError(this.handleError<any>(`Error in getFollowers()`))
+  );
+  
+}
+
+getRoles(userId:string):Observable<any>{ 
+  let serviceUrl = this.getUserService() +"/legisv1/roles/"+userId;
+  let headers      = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
+  return this.http.get(serviceUrl, this.httpOptions)
+  .pipe(
+    //map((response:Response) => response.json()),
+    tap(_ => this.log(`fetched getRoles`)),
+    catchError(this.handleError<any>(`Error in getRoles()`))
+  );                
+}
+/*
+getProfileImage(userId:string):Observable<any>{ 
+  let serviceUrl = this.getUserService() +"/legisv1/roles/"+userId;
+  let headers      = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
+  return this.http.get(serviceUrl, this.httpOptions)
+  .pipe(
+    //map((response:Response) => response.json()),
+    tap(_ => this.log(`fetched getRoles`)),
+    catchError(this.handleError<any>(`Error in getRoles()`))
+  );                
+}
+*/
+  /* OBSOLETED BY getRelationStatus()*/
+  getRelation(userId:string, districtId:string):Observable<any>{ 
     let serviceUrl = this.serviceUrl+"/getRelation";
     //console.log("follow district user.service " + request + " this.serviceUrl " + serviceUrl);
    //let bodyString = JSON.stringify(post); // Stringify payload
@@ -163,6 +263,18 @@ registerUser(user: User) {
   //                   .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
 }
 
+updateUserSmProfileImage(request:FormData){
+  let serviceUrl = this.getUserService() + "/uploadUserSmProfileImage";
+  console.log("uploadUserSmProfileImage user.service " + request + " this.serviceUrl " + serviceUrl);
+ 
+  return this.http.post(serviceUrl, request, this.httpOptions)
+  .pipe(
+    map((response:Response) => response.json()),
+    tap(_ => this.log(`posted updateUserSmProfileImage`)),
+    catchError(this.handleError<any>(`Error in updateUserSmProfileImage()`))
+  );
+}
+
 update(user: User) {
     //return this.http.put('/api/users/' + user.id, user);
 }
@@ -170,5 +282,13 @@ update(user: User) {
 delete(id: number) {
     //return this.http.delete('/api/users/' + id);
 }
+
+getImage(userId: string): Observable<Blob> {
+  let serviceUrl = this.getPostService() + "/downloadFile/user/" + userId;
+  console.log("getImage user.service " + serviceUrl);
+
+  return this.http.get(serviceUrl, { responseType: 'blob' });
+}
+
 
 }

@@ -7,7 +7,8 @@ import { SearchlegislatorsComponent } from './components/searchlegislators/searc
 //import {UserComponent} from './components/user/user/user.component';
 import {RegisterComponent} from './components/security/register/register.component';
 import {LoginComponent} from './components/security/login/login.component';
-
+import {PostComponent} from './components/post/post.component';
+import { AuthGuard } from '../app/auth/auth.guard';
 
 const routes: Routes = [
   
@@ -17,7 +18,7 @@ const routes: Routes = [
   {path: "group", loadChildren:'./components/group/group.module#GroupModule' },
   {path: "group/:id", loadChildren:'./components/group/group.module#GroupModule' },
   //{path: "user/legis/:id", component: UserModule }, 
-  // { path: 'distrcit',      component: HeroDetailComponent },
+  // { path: 'distrcit',      component: HeroDetailComponent }, 
   // {
   //   path: 'heroes',
   //   component: HeroListComponent,
@@ -29,6 +30,7 @@ const routes: Routes = [
   // },
   // { path: '**', component: PageNotFoundComponent }
   { path: 'searchLegislator', component: SearchlegislatorsComponent },
+  { path: 'news', component: PostComponent, canActivate: [AuthGuard] },
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },  
   { path: '',   redirectTo: '/searchLegislator', pathMatch: 'full' },

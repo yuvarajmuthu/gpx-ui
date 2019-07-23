@@ -15,7 +15,7 @@ export class ComponentcommunicationService {
   private missionAlertSource = new Subject<string>();
   //private newProfileTemplateAddedPopulation = new Subject<TemplatePopulationComponent>();
   private loginAlertSource = new Subject<boolean>();
-
+  private userProfileEditSource = new Subject<boolean>();
 
   // Observable string streams
   missionAnnounced$ = this.missionAnnouncedSource.asObservable();
@@ -23,14 +23,19 @@ export class ComponentcommunicationService {
   public missionAlert$ = this.missionAlertSource.asObservable();
   //missionNewProfileTemplateAdded$ = this.newProfileTemplateAddedPopulation.asObservable();
   loginChanged$ = this.loginAlertSource.asObservable();
-
+  userProfileEditChanged$ = this.userProfileEditSource.asObservable();
+  
   // Service message commands
   announceMission(mission: string) {
     this.missionAnnouncedSource.next(mission);
   }
 
   loginChanged(value: boolean) {
-    this.loginAlertSource.next(value);
+    this.loginAlertSource.next(value); 
+  }
+
+  userProfileChanged(value: boolean) {
+    this.userProfileEditSource.next(value);
   }
 
   public announceAlertMission(mission: string) {

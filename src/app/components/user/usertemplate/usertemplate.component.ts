@@ -21,6 +21,8 @@ import { Legislator } from '../../../models/legislator';
 import {UserbannertemplateComponent} from './userbannertemplate/userbannertemplate.component';
 import {UserbiodatatemplateComponent} from './userbiodatatemplate/userbiodatatemplate.component';
 import {UsercommitteetemplateComponent} from './usercommitteetemplate/usercommitteetemplate.component';
+import { UserroletemplateComponent } from './userroletemplate/userroletemplate.component';
+
 import {AbstractTemplateComponent} from '../abstractTemplateComponent';
 
 @NgModule({
@@ -31,7 +33,8 @@ import {AbstractTemplateComponent} from '../abstractTemplateComponent';
     //GpxInputComponent,
     UserbannertemplateComponent,
     UserbiodatatemplateComponent,
-    UsercommitteetemplateComponent
+    UsercommitteetemplateComponent,
+    UserroletemplateComponent
   ],
   imports: [
     GpxUIComponentsModule,
@@ -62,7 +65,8 @@ export class UsertemplateComponent implements OnChanges {
   private mappings = {
     'upCongressLegislatorDefault': UserbannertemplateComponent,
     'upCongressLegislatorExternal': UserbiodatatemplateComponent,
-    'upCongressLegislatorCommitteeExternal': UsercommitteetemplateComponent 
+    'upCongressLegislatorCommitteeExternal': UsercommitteetemplateComponent,
+    'upRole': UserroletemplateComponent 
 };
 
 private componentRef: ComponentRef<{}>;
@@ -73,6 +77,8 @@ constructor(
     private dataShareService:DatashareService) {
   //super();
 }
+
+//invoked whenever component type changes, adds the new component next to the existing components
 ngOnChanges(type: SimpleChanges){
   console.log('userProfile.template.component ngOnChanges() ');
   this.loadComponentTemplate();
@@ -112,7 +118,7 @@ loadComponentTemplate() {
     for(let compType of this.type){
       let component = this.mappings[compType];
       let componentFactory = this.componentFactoryResolver.resolveComponentFactory(component);    
-
+      this.container.clear();
       let viewContainerRef = this.container.createComponent(componentFactory);
       //viewContainerRef = this.container.createEmbeddedView();
       //this.loader.loadNextToLocation(component, this.viewContainerRef);
