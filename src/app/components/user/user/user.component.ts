@@ -1,5 +1,5 @@
 import {Component, ViewContainerRef, ViewChild, ElementRef, Renderer, ChangeDetectorRef, ComponentRef, Input, OnInit, isDevMode} from '@angular/core';
-import { Router, ActivatedRoute, ParamMap } from "@angular/router";
+import { Router, ActivatedRoute, Params } from "@angular/router";
 
 // import { TAB_DIRECTIVES } from 'ng2-bootstrap/components/tabs';
 // import { CollapseDirective } from 'ng2-bootstrap/components/collapse';
@@ -16,6 +16,7 @@ import {User} from '../../../models/user';
 //import {LegislatorComponentGPX} from './legislator.component';
 //import {DynamicContentComponent} from './userProfile.template.component';
 import {UsertemplateComponent} from '../usertemplate/usertemplate.component';
+//import {PostComponent} from '../../post/post.component';
 
 import {DatashareService} from '../../../services/datashare.service';
 import {UserService} from '../../../services/user.service';
@@ -23,10 +24,12 @@ import { LegislatorService } from '../../../services/legislator.service';
 import { ComponentcommunicationService }     from '../../../services/componentcommunication.service';
 import { AlertService } from '../../../services/alert.service'; 
 
+//import {TopnavbarComponent} from '../../nav/topnavbar/topnavbar.component';
+
 @Component({
   selector: 'app-user',
-  templateUrl: './user1.component.html',
-  styleUrls: ['./user.component.css']
+  templateUrl: './user3.component.html',
+  styleUrls: ['./user2.component.css']
 })
 export class UserComponent implements OnInit {
 
@@ -36,7 +39,7 @@ export class UserComponent implements OnInit {
 	public isCollapsed:boolean = false;
 	public isCMCollapsed:boolean = false;
 	public isPartiesCollapsed:boolean = false;
-private isProfileEditMode:boolean = false;
+  private isProfileEditMode:boolean = false;
 	public electedPersonsOld=[];
   public electedPersons:Array<Legislator>;
 	public contestedPersons=[];
@@ -54,7 +57,10 @@ private isProfileEditMode:boolean = false;
   operation:string = "";
   profileImage:string="";
   profileSmImage:any;
+  bannerImage:any;
   isImageLoading:boolean = false;
+  isProfileCollapsed:boolean = false;
+  isActivityCollapsed:boolean = true;
 
   activities:number = 0;  
       //private populationComponent: TemplatePopulationComponent;
@@ -63,6 +69,7 @@ private isProfileEditMode:boolean = false;
   following:boolean = false;
   requestedToFollow:boolean = false;
   followRequestRejected:boolean = false;
+
   currentUser:User = null;
   loggedUser:User = null;
   postFormData:FormData;
@@ -71,6 +78,10 @@ private isProfileEditMode:boolean = false;
   followers:User[] = [];
   selectedProfileSmImage : File;
   profileSmImageChanged : boolean = false;
+  paramUsername:string = "";
+  profileTabSelected:boolean = true;
+  activitiesTabSelected:boolean = false; 
+  isSelfProfile:boolean = false;
 
   constructor(//private  router: Router,
     private route: ActivatedRoute,
@@ -114,13 +125,33 @@ private isProfileEditMode:boolean = false;
       this.profileUserId = this.legisId;
       console.log("from userProfile Param value - legisId " + this.legisId);      
     }  */
+    console.log("from user.component routerOnActivate()");      
+
   }
 
   ngOnInit(){
+    this.route.params.subscribe((params: Params) => {
+      this.paramUsername = params['id'];
+      console.log("from user.component route params changed " + this.paramUsername);      
+      this.loadComponent(this.paramUsername);
+
+      this.loggedUser = this.datashareService.getCurrentUser();
+    
+
+      if(this.paramUsername === this.loggedUser.username){
+        this.isSelfProfile = true;
+      }
+
+   });
+
+    this.bannerImage = "assets/images/user-banner1.jpg";
+  }
+  
+  loadComponent(id:string){
     this.profileEditOption = this.getPermission(); 
     this.loggedUser = this.datashareService.getCurrentUser();
     //this.editProfile();
-    let id = this.route.snapshot.paramMap.get('id');
+    //let id = this.route.snapshot.paramMap.get('id');
     this.editLabel = "Edit Profile";
 
     if(id){
@@ -143,11 +174,29 @@ private isProfileEditMode:boolean = false;
 
     }else{  
       if(this.profileUserId == 'external'){
+        //TODO
+        //determine congress or state legislator
+        //get bioguide id
         this.isLegislator = true; // may not be required
         this.viewingUser['isLegislator'] = true;
         //*** LEGISLATOR SELECTED FROM SEARCH SCREEN IS SET AS VIEWINGUSER - IN LEGISLATOR.COMPONENT ***/
         this.viewingUser['externalData'] = this.datashareService.getViewingUser();
-        this.profileUserId = this.viewingUser['externalData']['id'];
+
+
+        if(!this.viewingUser['externalData']['leg_id']){ //CONGRESS
+          this.viewingUser['isCongress'] = true;
+          let photoUrl = this.viewingUser['externalData']['photo_url'];
+          let fileName = photoUrl.substring(photoUrl.lastIndexOf('/')+1);
+          let bioguideId = fileName.substring(0, fileName.lastIndexOf('.'));
+          console.log('bioguideId ', bioguideId);
+          this.viewingUser['bioguideId'] = bioguideId;
+          this.profileUserId = bioguideId;
+
+
+        }else{//OPENSTATE
+          this.viewingUser['isCongress'] = false;
+          this.profileUserId = this.viewingUser['externalData']['id'];
+        }
         this.viewingUser['external'] = true;
         //this.viewingUser['userId'] = this.profileUserId;
       } else{
@@ -174,34 +223,28 @@ private isProfileEditMode:boolean = false;
             console.log("User data from service: ", this.userData);
 
             //this may not be required as getRelationStatus() can be used
-            this.viewingUser['connections'] = this.userData['connections'];
+            //this.viewingUser['connections'] = this.userData['connections'];
 
 
 
-            this.viewingUser['followers'] = this.userData['followers'];
-            // console.log("User connections: ", this.connections);
-            // if(this.connections){
-            //   for(let connection of this.connections){
-               
-            //   }
-            // }
-            if(this.viewingUser['external']){
+            //this.viewingUser['followers'] = this.userData['followers'];
+            
+            if(this.viewingUser['external']){ // and not persisted
               if(isDevMode()){
                 this.profileSmImage = "assets/images/temp/user-avatar.jpg";
               }else{
                 this.profileSmImage = this.userData["photo_url"];
               }
-              this.profileSmImage = this.userData["photo_url"];
-
             }else{
               this.getProfileSmImage(this.viewingUser['userId']);
             } 
             //getting the available profile templates for this user type - publicUser
-            this.profilesTemplates = this.viewingUser['profileTemplates'] = this.userData['profile'];
+            this.profilesTemplates = this.viewingUser['profileTemplates'] = data['profile'];
             console.log("profile templates: ", this.profilesTemplates);
 
             //getting the data for this user profile
-            this.profilesData = this.viewingUser['profilesData'] = this.userData['profileData'];
+            //this.profilesData = this.viewingUser['profilesData'] = this.userData['profileData'];
+            this.profilesData = this.userData['profileData'];
             console.log("profile data: ", this.profilesData);
 
             //identifying the profile selected for this user profile, so those components shall be loaded
@@ -210,10 +253,11 @@ private isProfileEditMode:boolean = false;
               console.log("loading template component: ", profileData['profile_template_id']);
               //this.templateType.push(profileData['profile_template_id']);
               compTypes.push(profileData['profile_template_id']); 
-              if(profileData['profile_template_id'] === "upCongressLegislatorExternal"){
-                let profileItemData = profileData['data'][0];
-                this.firstName = profileItemData['first_name'];
-                this.lastName = profileItemData['last_name'];
+              if(profileData['profile_template_id'] === "upCongressLegislatorExternal"){ 
+                //let profileItemData = profileData['data'][0];
+                let profileItemData = profileData['data'];
+                this.firstName = profileItemData['firstName'];
+                this.lastName = profileItemData['lastName'];
 
               }
             }
@@ -229,6 +273,22 @@ private isProfileEditMode:boolean = false;
       );
     }
 
+  }
+
+  showProfile(){
+    this.isProfileCollapsed=false; 
+    this.isActivityCollapsed=true;
+    this.profileTabSelected = true;
+    this.activitiesTabSelected = false;
+    return false;
+  }
+  
+  showActivities(){
+    this.isProfileCollapsed=true; 
+    this.isActivityCollapsed=false;
+    this.profileTabSelected = false;
+    this.activitiesTabSelected = true;
+    return false;
   }
 
   getProfileSmImage(userId:string) {
@@ -261,7 +321,7 @@ createImageFromBlob(image: Blob) {
     let edit:boolean = false;
     if(this.editLabel === "Edit Profile"){//Enabling to update the profile
       edit = true;
-    }else{//Saving profile
+    }else{//Saving profile 
       edit = false;
     }
     
@@ -273,6 +333,17 @@ createImageFromBlob(image: Blob) {
       this.editLabel = "Edit Profile";
     }
     this.missionService.userProfileChanged(edit);
+
+  }
+  
+  cancelEditProfile(){
+    
+    this.editLabel = "Edit Profile";
+    
+    this.datashareService.editProfile(false);
+    this.missionService.userProfileChanged(false);
+
+
 
   }
 
@@ -406,6 +477,10 @@ createImageFromBlob(image: Blob) {
       });
   }
 
+  test(){
+    console.log('Cancel Follow');
+  }
+
   getRelationStatus(entity:string, profileId:string){
     this.userService.getRelationStatus(entity, profileId)
     .subscribe(
@@ -444,8 +519,14 @@ createImageFromBlob(image: Blob) {
     .subscribe(
       (result) => {
           console.log("getFollowers response " + result);
-          this.followers = result;
+          this.viewingUser['followers'] = this.followers = result;
           console.log("getFollowers response " + this.followers);
+          if(this.followers){
+            this.followers.forEach(follower => {
+              //get the profilesmimage
+              //this.getProfileSmImage(follower.username);
+            });
+          }
         },
       (err) => {
         console.log("Error ", err);

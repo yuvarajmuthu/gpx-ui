@@ -1,0 +1,13 @@
+
+<figure (click)="loadUser()">
+  <!--
+  <img src="assets/images/temp/user-avatar.jpg" alt="">
+-->
+  <img [src]="profileSmImage"
+  alt="Place image title"
+  *ngIf="!isImageLoading">
+</figure> 
+<div class="friend-meta">
+    <h4><a [routerLink]="['/user', user.username]" title="">{{user.username}}</a></h4>
+    <a href="#" title="" class="underline" (click)="followEntity()">Follow</a>
+</div>

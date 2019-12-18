@@ -20,6 +20,7 @@ export class PostComponent implements OnInit {
   @Input() groupId:string;
   @Input() userId:string;
   @Input() type:string;
+  @Input() disableNewPost:boolean = false;
 
   posts:Post[] = [];
   
@@ -35,7 +36,7 @@ export class PostComponent implements OnInit {
       
       entityId=this.groupId;
     }else if(this.type == "user"){
-      entityId=this.dataShareService.currentUserId;
+      entityId=this.dataShareService.currentUserId; 
     }
 
     console.log("Activities for " + entityId);

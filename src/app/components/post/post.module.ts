@@ -19,6 +19,8 @@ import {BannerComponent} from '../banner/banner.component';
   ],
   declarations: [
     //BannerComponent, 
-    PostComponent, PostcardComponent, NewpostComponent] 
-})
+    PostComponent, PostcardComponent, NewpostComponent
+  ],
+  exports:[PostComponent] 
+}) 
 export class PostModule { }

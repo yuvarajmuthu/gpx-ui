@@ -36,7 +36,7 @@
             "district":"42",
             "chamber":"lower",
             "state":"pa",
-            "party":"Democratic",
+            "party":"Democratic", 
             "type":"member",
             "start_date":null
          },

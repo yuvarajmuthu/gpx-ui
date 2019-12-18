@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone  } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef  } from '@angular/core';
 import {AbstractTemplateComponent} from '../../abstractTemplateComponent';
 
 import {DatashareService} from '../../../../services/datashare.service';
@@ -18,18 +18,20 @@ import { Observable} from 'rxjs';
 export class UserroletemplateComponent  extends AbstractTemplateComponent  implements OnInit  {
   id = "upRole";
   //roles:any = null;
-  roles = [];
+  roles:JSON[] = [];
   displayProperties = [];
-
+  //role = {};
+  viewingUser={}; 
   constructor(private legislatorsService2:LegislatorService, 
     private userService2:UserService, 
     private dataShareService2:DatashareService, 
     private missionService2: ComponentcommunicationService, 
-    private zone: NgZone) {
+    private changeDetector : ChangeDetectorRef) {
   
       super(legislatorsService2, dataShareService2, missionService2);
   
       console.log("constructor() userroletemplate.component");
+      this.viewingUser = this.dataShareService2.getViewingUser();
       
   }
 
@@ -47,7 +49,6 @@ export class UserroletemplateComponent  extends AbstractTemplateComponent  imple
       this.loadTemplateData();   
   }
 
-
   loadDisplayProperties(){
     for (let profileTemplates of this.viewingUser['profileTemplates']){
       //console.log("reading template component properties: ", profileTemplates['profile_template_id']);
@@ -57,7 +58,6 @@ export class UserroletemplateComponent  extends AbstractTemplateComponent  imple
         break;  
       }
     } 
-
   }
 
   loadTemplateData(){
@@ -69,14 +69,34 @@ export class UserroletemplateComponent  extends AbstractTemplateComponent  imple
         console.log(this.roles);
 
       });
-*/
       this.zone.run(() => {
         this.userService2.getRoles(this.profileUserId).toPromise().then((data) => {
-            this.roles= data || [];
+            this.roles= data;
             console.log(this.roles);
-
         });
         })
+*/
+//this.zone.run(() => {
+
+        this.userService2.getRoles(this.profileUserId, this.viewingUser["isCongress"])
+        .subscribe((data) => {
+          //console.log("roles count ", data.length);
+          //this.role = JSON.parse(JSON.stringify(data[0]));
+          //this.role['term'] = 'term';
+          this.roles= data;
+          this.changeDetector.detectChanges();
+        });
+          /*
+          data.forEach(element => {
+            this.roles.push(JSON.parse(JSON.stringify(element)));
+            console.log(this.roles);
+            this.role = JSON.parse(JSON.stringify(element));
+              
+          });
+          */
+//      });
+
+  //  });
   }
 
   getData():string{

@@ -6,7 +6,6 @@ import { UserComponent } from './user/user.component';
 import { UsertemplateComponent } from './usertemplate/usertemplate.component';
 
 import {UserRoutingModule} from './user-routing.module';
-//import {GpxUIComponentsModule} from '../gpx-uicomponents/gpx-uicomponents.module';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
@@ -17,7 +16,13 @@ import { UsercommitteetemplateComponent } from './usertemplate/usercommitteetemp
 import { UserbiodatatemplateComponent } from './usertemplate/userbiodatatemplate/userbiodatatemplate.component';
 import { UserroletemplateComponent } from './usertemplate/userroletemplate/userroletemplate.component';
 import { UserofficetemplateComponent } from './usertemplate/userofficetemplate/userofficetemplate.component';
+import { Usercard1Component } from './usercard1/usercard1.component';
 
+import { PostModule } from '../post/post.module';
+import {GpxUIComponentsModule} from '../../components/gpx-uicomponents/gpx-uicomponents.module';
+
+
+import { UserstageComponent } from './userstage/userstage.component';
 
 @NgModule({
   imports: [
@@ -25,15 +30,19 @@ import { UserofficetemplateComponent } from './usertemplate/userofficetemplate/u
     FormsModule,
     ReactiveFormsModule,
     UserRoutingModule,
-    //GpxUIComponentsModule,
-    NgbModule
+    GpxUIComponentsModule,
+    NgbModule,
+    PostModule
   ],
   declarations: [
     UserComponent, 
     UsertemplateComponent, 
     //BannerComponent, 
-    UserbannertemplateComponent, UsercommitteetemplateComponent, UserbiodatatemplateComponent, UserroletemplateComponent, UserofficetemplateComponent
+    UserbannertemplateComponent, UsercommitteetemplateComponent, UserbiodatatemplateComponent, 
+    UserroletemplateComponent, UserofficetemplateComponent, Usercard1Component, UserstageComponent
   ],
-  entryComponents:[UserbannertemplateComponent, UsercommitteetemplateComponent, UserbiodatatemplateComponent, UserroletemplateComponent]
+  entryComponents:[UserstageComponent,UserbannertemplateComponent, UsercommitteetemplateComponent, 
+    UserbiodatatemplateComponent, UserroletemplateComponent, UserofficetemplateComponent],
+  //exports:[UserstageComponent]
 })
 export class UserModule { }

@@ -147,6 +147,7 @@ return this.http.post(loginServiceUrl, user, this.httpOptions)
       this.alertService.success('Logout successful', true);
   }
 
+  //OBSOLETE
   getBearerToken():string{
     return localStorage.getItem('currentUserToken');
   }

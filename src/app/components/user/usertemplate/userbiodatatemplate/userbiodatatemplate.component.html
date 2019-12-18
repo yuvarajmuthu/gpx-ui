@@ -31,15 +31,31 @@
 </form>
 -->
 <form [formGroup]="biodataTemplateForm"> 
+  <div *ngIf="externalUser">
   <div class="form-group row" *ngFor="let displayProperty of displayProperties">
 
       <label class="col-lg-3 col-form-label form-control-label">{{displayProperty.displayLabel}}</label>
 
       <div class="col-lg-9">
-          <input *ngIf="isProfileInEditMode" class="form-control" [formControlName]="displayProperty['propId']" type="text" value="{{legislator[displayProperty.propId]}}"> 
-          <label *ngIf="!isProfileInEditMode" class="col-form-label form-control-label">{{legislator[displayProperty.propId]}}</label> 
+          <input *ngIf="isProfileInEditMode" class="form-control" [formControlName]="displayProperty['propId']" type="text" value="{{biodata[displayProperty.propId]}}"> 
+          <label *ngIf="!isProfileInEditMode" class="col-form-label form-control-label">{{biodata[displayProperty.propId]}}</label> 
         </div>
 
   </div>
+</div>
+
+<div *ngIf="!externalUser">
+    <div class="form-group row" *ngFor="let displayProperty of displayProperties">
+  
+        <label class="col-lg-3 col-form-label form-control-label">{{displayProperty.displayLabel}}</label>
+  
+        <div class="col-lg-9">
+            <input *ngIf="isProfileInEditMode" class="form-control" [formControlName]="displayProperty['propId']" type="text" value="{{biodata[displayProperty.propId]}}"> 
+            <label *ngIf="!isProfileInEditMode" class="col-form-label form-control-label">{{biodata[displayProperty.propId]}}</label> 
+          </div>
+  
+    </div>
+  </div>
+
   <button class="btn btn-primary" (click)="getDisplay()">Display</button>
 </form>

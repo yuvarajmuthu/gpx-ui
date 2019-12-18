@@ -1,0 +1,254 @@
+<!--
+<div class="navbar-more-overlay"></div>
+
+<nav class="navbar navbar-inverse navbar-fixed-top animate">
+        <div class="container">
+                <div class="navbar-header hidden-xs">
+                    <a class="navbar-brand" href="#">Brand</a>
+                </div>
+    
+                <ul class="nav navbar-nav navbar-right mobile-bar">
+                    <li>
+                        <a href="#">
+                            <span class="menu-icon fa fa-home"></span>
+                            Home 
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span class="menu-icon fa fa-info"></span>
+                            <span class="hidden-xs">About the Boat</span>
+                            <span class="visible-xs">About</span>
+                        </a>
+                    </li>
+                    <li class="hidden-xs">
+                        <a href="#">
+                            <span class="menu-icon fa fa-picture-o"></span>
+                            Photos
+                        </a>
+                    </li>
+                    </ul>
+        </div>
+    </nav>
+
+-->
+<div class="container main-secction">
+    
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12 image-section">
+            <img [src]="bannerImage">
+        </div>
+        <div class="row user-left-part">
+            <!--Banner 1/2- Start-->
+            <div class="col-md-3 col-sm-3 col-xs-12 user-profil-part pull-left">
+                <div class="row ">
+                    <div class="col-md-12 col-md-12-sm-12 col-xs-12 user-image text-center">
+                        <!-- <img [src]="profileSmImage" class="rounded-circle"> -->
+                        <img [src]="profileSmImage" class="rounded-circle"
+                        *ngIf="!isImageLoading">
+                        <div class="edit-phto" *ngIf="isProfileEditable()">
+                            <i class="fa fa-camera-retro"></i>
+                            <label class="fileContainer">
+                                Add/Change Profile Picture
+                                <input type="file" (change)="onProfileSmImageSelected($event)"/>
+                            </label>
+                        </div>
+
+                    </div>
+                  
+                </div>
+            </div>
+        <!--Banner 1/2- End-->
+            <!--Banner 2/2- Start-->
+
+            <div class="col-md-9 col-sm-9 col-xs-12">
+                 
+               
+                <div class="row profile-right-section-row">
+                    <div class="col-md-12 profile-header">
+                        <div class="row">
+                            <div class="col-md-6 col-xs-12 profile-header-section1 pull-left">
+                                <h1>{{firstName}} {{lastName}}</h1>
+                            <!--    <h5>[Position]</h5>-->
+                            </div>
+
+                            <div class="col-md-6 col-xs-12">
+                                <!--
+                                <div class="pull-left">
+                                        <ul class="nav nav-pills" role="tablist">
+                                                <li class="nav-item">
+                                                    <a [className]="profileTabSelected ? 'nav-link active' : 'nav-link'" href="#" role="tab" data-toggle="tab" (click)="showProfile()" aria-controls="ProfileCollapse">
+                                                        Profile
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a [className]="activitiesTabSelected ? 'nav-link active' : 'nav-link'" href="#" role="tab" data-toggle="tab" (click)="showActivities()" aria-controls="ActivityCollapse">
+                                                        Activities
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                </div>
+                            -->
+                                <div class="pull-right">
+                                    <h2><strong>{{followersCount}}</strong></h2>                    
+                                    <p><small>Followers</small></p>
+                                    <!--FOLLOW button shall be displayed even not logged in
+                                        User shall Register/Login if not logged in
+                                    <div class="text-right" *ngIf="isUserLogged && !isSelfProfile">
+                                    -->
+                                        <div class="text-right" *ngIf="!isSelfProfile">
+                                        <div ngbDropdown class="d-inline-block">
+                                            <button id="dropdownFollow" ngbDropdownToggle *ngIf="following" type="button" class="btn btn-success glyphicon glyphicon-ok">Following</button>       
+                                            <button id="dropdownFollow" ngbDropdownToggle *ngIf="requestedToFollow" type="button" class="btn btn-success glyphicon glyphicon-ok">Request sent</button>       
+                                            <button id="dropdownFollow" ngbDropdownToggle *ngIf="followRequestRejected" type="button" class="btn btn-success glyphicon glyphicon-ok">Request Rejected</button>       
+                                            <button id="dropdownFollow" ngbDropdownToggle *ngIf="!following && !requestedToFollow && !followRequestRejected" type="button" class="btn btn-primary" (click)="followEntity()">
+                                                <span class="fa fa-plus-circle"></span> Follow
+                                            </button> 
+                                            <div ngbDropdownMenu aria-labelledby="dropdownFollow">
+                                            <button class="dropdown-item" (click)="test()">Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                                
+                        </div> <!--end row-->
+                    </div>
+                   
+                    
+                </div>
+            
+            </div>
+            <!--Banner - End-->
+            <section>
+                    
+
+                <div class="gap gray-bg">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-lg-12">
+<!--
+                                    <div>
+                                            <ul class="nav nav-pills">
+                                                    <li class="nav-item">
+                                                      <a class="nav-link active" href="#">Active</a>
+                                                    </li>
+                                                    <li class="nav-item dropdown">
+                                                      <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+                                                      <div class="dropdown-menu">
+                                                        <a class="dropdown-item" href="#">Action</a>
+                                                        <a class="dropdown-item" href="#">Another action</a>
+                                                        <a class="dropdown-item" href="#">Something else here</a>
+                                                        <div class="dropdown-divider"></div>
+                                                        <a class="dropdown-item" href="#">Separated link</a>
+                                                      </div>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                      <a class="nav-link" href="#">Link</a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                      <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                                                    </li>
+                                                  </ul>
+                                    </div>
+                                
+                                <app-topnavbar></app-topnavbar>
+                               -->
+                                      
+                                <div class="row cols-reverse" id="page-contents">
+                                    <!-- sidebar -->
+                                    <div class="col-lg-3 cols-item1">
+                                        
+                                        <aside class="sidebar static">
+                                                <div class="widget" (click)="isProfileCollapsed=false; isActivityCollapsed=true;" aria-controls="ProfileCollapse">
+                                                        <h4 class="widget-title">Profile</h4>
+                                                        <!--
+                                                        <ul class="naves">
+                                                                <li *ngFor="let profileTemplate of profilesTemplates">
+                                                                    <i class="ti-info-alt"></i>
+                                                                    <a class="" [routerLink]="" title="" data-ripple="" (click)="loadTemplate(profileTemplate.profile_template_id)">{{profileTemplate.name}}</a>
+                                                                </li>    
+            
+                                                        </ul>
+                                                        -->
+                                                </div>            
+                                            <div class="widget stick-widget" (click)="isProfileCollapsed=true; isActivityCollapsed=false;" aria-controls="ActivityCollapse">
+                                                <h2 class="widget-title">Activities</h2>
+                                            </div>
+                                            <!-- 
+                                            <div class="widget stick-widget">
+                                                    <h2 class="widget-title">Townhalls
+                                                        <button class="btn" data-toggle="tooltip" data-placement="bottom" title="Add Townhall Event">
+                                                            <i class="fa fa-plus"></i>
+                                                        </button>
+                                                    </h2>
+                                            </div>
+                                            <div class="widget stick-widget">
+                                                    <h2 class="widget-title">Upcoming events</h2>
+                                            </div>   
+                                        -->                            
+                                        </aside>
+                                    </div>
+                                    <!-- Main stage area -->
+                                    <div class="col-lg-6 cols-item2">
+                                            <div id="ActivityCollapse" [ngbCollapse]="isActivityCollapsed">
+                                                    <app-post [type]="user" [userId]="admin1" [disableNewPost]=true></app-post>
+                                            </div>   
+                                        <div id="ProfileCollapse" [ngbCollapse]="isProfileCollapsed">
+                                          <!--  <div class="col-lg-12 col-sm-8">-->
+                                            
+                                                    <div class="timeline-info">
+                                                            <ul class="naves"> <!--HORIZONTAL ITEMS FOR PROFILES / ADD SECTION IN EDIT MODE-->
+                                                                
+                                                                <li *ngFor="let profileTemplate of profilesTemplates">
+                                                                    <i class="fa fa-user"></i>
+
+                                                                    <a class="" [routerLink]="" title="" data-ripple="" (click)="loadTemplate(profileTemplate.profile_template_id)">{{profileTemplate.name}}</a>
+                                                                </li>
+                                                                    
+                                                                <li *ngIf="isProfileEditable()">
+                                                                    <div ngbDropdown class="d-inline-block">
+                                                                        <button class="btn btn-outline-primary" id="dropdownAddSection" ngbDropdownToggle>Add Section</button>
+                                                                        <div ngbDropdownMenu aria-labelledby="dropdownAddSection">
+                                                                        <button class="dropdown-item" *ngFor="let profileTemplate of profilesTemplates" (click)="loadTemplate(profileTemplate.profile_template_id)">{{profileTemplate.name}}</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                                <li *ngIf="isUserLogged()">
+                                                                    <div>
+                                                                        <button type="button" class="btn btn-primary" (click)="editProfile()">{{editLabel}}</button>
+                                                                        <button type="button" *ngIf="isProfileEditable()" class="btn btn-primary" (click)="cancelEditProfile()">Cancel Edit</button>
+                                                                     </div>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                        <app-usertemplate [type]="templateType"></app-usertemplate> 
+                                                </div>
+                                                  
+                                                <!--</div>-->
+                                        <!--
+                                        
+                                    -->
+                                    </div><!-- centerl meta -->
+                                    <div class="col-lg-3 cols-item3">
+                                        <aside class="sidebar static">
+                                            <!--WHO'S FOLLOWING - START-->                       
+                                            <div class="widget stick-widget">
+                                                <h4 class="widget-title">Followers</h4>
+                                                <ul class="followers">
+                                                    <li *ngFor="let followingUser of followers">
+                                                    <app-usercard1 [user]=followingUser></app-usercard1>
+                                                    </li>
+                                                </ul>    
+                                            </div>                                
+                                            <!--WHO'S FOLLOWING - END-->
+                                        </aside>
+                                    </div><!-- sidebar -->
+                                </div>	
+                            </div>
+                        </div>
+                    </div>
+                </div>	
+            </section>
+        </div>
+    </div>
+</div>

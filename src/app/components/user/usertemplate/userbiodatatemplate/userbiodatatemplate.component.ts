@@ -26,6 +26,7 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
   imageUrl:string = "";
   
   data = {};
+  biodata={};
   private userData = {};
   public profilesData = [];
   public profilesTemplates = [];
@@ -34,51 +35,12 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
   private templateData = [];
   group:FormGroup;
   biodataTemplateForm: FormGroup;
+  externalUser:boolean;
 
   //legislator: Legislator;
   //resultop:any;
   //keys = [];
   
-  //called after the constructor
-  ngOnInit(): void {
-    console.log("ngOnInit() userProfile.template TemplateLegisCongressProfileComponent");   
-    //this.legislator = this.getLegislator();
-    //console.log("this.legislator " + this.legislator);  
-  
-    //this.keys = this.getKeys();
-    //console.log("this.keys " + this.keys);  
-  
-  /*
-   
-    if(this.dataShareService2.getSelectedLegislatorId()){  
-      this.legisId = this.dataShareService2.getSelectedLegislatorId();
-        console.log("this.legisId " + this.legisId);
-  
-  
-          this.legislatorsService2.getLegislature(this.legisId, 'bioguide_id')
-    .map(result => this.resultop = result.results)
-    .subscribe((result) => {
-              if(result.length > 0){
-                this.legislator = result[0];
-              }
-              console.log("Loading: " + this.legislator);
-           this.keys = Object.keys(this.legislator);
-           console.log("keys " + this.keys);    
-  
-           console.log("this.legislator.bioguide_id " + this.legislator.bioguide_id);
-           //retrieving the image from bioguide
-           if(this.legislator.bioguide_id){
-              let intial = this.legislator.bioguide_id.charAt(0);
-              let imageUrl = 'http://bioguide.congress.gov/bioguide/photo/' + intial + '/' + this.legislator.bioguide_id + '.jpg';
-              console.log("bioguide image url " + imageUrl);
-              this.legislator.bioguideImageUrl = imageUrl;
-           }
-            });
-  
-  
-    }
-    */
-  }
   
   //called before ngOnInit()
   constructor(private legislatorsService2:LegislatorService, 
@@ -114,19 +76,33 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
 
       //this.loadTemplateData();  
       //OVERRIDE KEYS - CUSTOMIZED DISPLAY
-      this.loadDisplayProperties();
-      let structForm = this.createFormGroup();
-      console.log("structForm ", structForm);
+      //this.loadDisplayProperties();
+      //let structForm = this.createFormGroup();
+      //console.log("structForm ", structForm);
       
       //this.biodataTemplateForm = this.group = this.fbuilder.group(JSON.parse(structForm));
       //this.biodataTemplateForm = this.group = this.fbuilder.group(structForm); 
       //this.createFormGroup();
-      console.log("this.biodataTemplateForm ", this.biodataTemplateForm);
+      //console.log("this.biodataTemplateForm ", this.biodataTemplateForm);
   
   
     }
+
+    //called after the constructor
+  ngOnInit(): void {
+    console.log("ngOnInit() userbiodatatemplate.component");
+    if(this.viewingUser['external']){
+      this.externalUser = true;  
+    }
+
+    this.loadDisplayProperties();     
+  
+    this.loadTemplateData();   
+    this.biodataTemplateForm = this.fbuilder.group({});
+
+  }
     
-    loadDisplayProperties(){
+    loadDisplayProperties(){ 
       for (let profileTemplates of this.viewingUser['profileTemplates']){
         //console.log("reading template component properties: ", profileTemplates['profile_template_id']);
         //this.templateType.push(profileData['profile_template_id']);
@@ -136,9 +112,18 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
         }
       } 
   
-    }
+    } 
   
     loadTemplateData(){
+      let userType:string = this.externalUser?"external": "internal";
+      this.userService2.getBiodata(this.profileUserId, userType)
+      .subscribe((response) => {
+        this.biodata= response['data'];
+        console.log('biodata response data ', this.biodata);
+        this.changeDetector.detectChanges();
+      });
+
+      /*
         this.userService2.getUserData(this.profileUserId, true).subscribe(
           data => {
           this.userData = data;
@@ -180,6 +165,7 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
   
           }
       );
+      */
   
     }
   
@@ -189,7 +175,7 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
   
         return permission;
     }
-
+/*
     createFormGroup() {
       this.biodataTemplateForm = this.fbuilder.group({});
       let struct:string = "\"{";//"new FormGroup({";
@@ -209,7 +195,6 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
       });
 //      struct = struct + "})";
       struct = struct + "}\"";
-      //console.log("struct " + struct);
       return struct;//JSON.parse(struct);
 /*
       return new FormGroup({
@@ -221,8 +206,9 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
         requestType: new FormControl(),
         text: new FormControl()
       });
-      */
+      
     }
+    */
     getDisplay(){
       console.log("Object.assign({}, this.biodataTemplateForm.value) ", Object.assign({}, this.biodataTemplateForm.value));
       const result: Legislator = Object.assign({}, this.biodataTemplateForm.value);
@@ -249,7 +235,7 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
   
     saveProfile(){
       this.data["profile_template_id"] = this.id;
-      this.data["user_id"] = this.profileUserId; // how about for user updating other passive profile ?
+      this.data["username"] = this.profileUserId; // how about for user updating other passive profile ?
       this.data["data"] = this.getData();
 
 

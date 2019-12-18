@@ -49,7 +49,7 @@ export class UsercommitteetemplateComponent  extends AbstractTemplateComponent  
       mission => {
         console.log("Received save Profile message from parent for district " + mission);
   
-        this.saveProfile();
+        this.saveProfile(); 
       });
   
       //this.loadTemplateData();  
@@ -59,7 +59,8 @@ export class UsercommitteetemplateComponent  extends AbstractTemplateComponent  
     }
   
     loadTemplateData(){
-  
+  //    this.userService2.getUserData(this.profileUserId, true).subscribe(
+    //    data => {});
   
     }
   

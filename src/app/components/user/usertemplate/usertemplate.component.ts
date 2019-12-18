@@ -22,6 +22,8 @@ import {UserbannertemplateComponent} from './userbannertemplate/userbannertempla
 import {UserbiodatatemplateComponent} from './userbiodatatemplate/userbiodatatemplate.component';
 import {UsercommitteetemplateComponent} from './usercommitteetemplate/usercommitteetemplate.component';
 import { UserroletemplateComponent } from './userroletemplate/userroletemplate.component';
+import { UserofficetemplateComponent } from './userofficetemplate/userofficetemplate.component';
+
 
 import {AbstractTemplateComponent} from '../abstractTemplateComponent';
 
@@ -34,7 +36,8 @@ import {AbstractTemplateComponent} from '../abstractTemplateComponent';
     UserbannertemplateComponent,
     UserbiodatatemplateComponent,
     UsercommitteetemplateComponent,
-    UserroletemplateComponent
+    UserroletemplateComponent,
+    UserofficetemplateComponent
   ],
   imports: [
     GpxUIComponentsModule,
@@ -63,10 +66,11 @@ export class UsertemplateComponent implements OnChanges {
   data:string;
   //all the user profile templates should be mapped here
   private mappings = {
-    'upCongressLegislatorDefault': UserbannertemplateComponent,
+    'upDefault': UserbannertemplateComponent,
     'upCongressLegislatorExternal': UserbiodatatemplateComponent,
     'upCongressLegislatorCommitteeExternal': UsercommitteetemplateComponent,
-    'upRole': UserroletemplateComponent 
+    'upRole': UserroletemplateComponent,
+    'upOffices': UserofficetemplateComponent 
 };
 
 private componentRef: ComponentRef<{}>;

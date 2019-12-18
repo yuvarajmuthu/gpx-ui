@@ -18,6 +18,7 @@ import { AngularFontAwesomeModule } from 'angular-font-awesome';
 import { AppRoutingModule } from './app-routing.module';
 import {SecurityModule} from './components/security/security.module';
 import {PostModule} from './components/post/post.module';
+import {UserModule} from './components/user/user.module';
 import {GpxUIComponentsModule} from './components/gpx-uicomponents/gpx-uicomponents.module';
 
 import { AppComponent } from './app.component';
@@ -75,16 +76,20 @@ export function tokenGetter() {
      //NgbTypeaheadModule,
     //HttpModule,
     NgbModule,
+    //Any requests sent using Angular's HttpClient will automatically have a token attached as an Authorization header.
     JwtModule.forRoot({
       config: {
+        skipWhenExpired: true,
+        //throwNoTokenError: true,
         tokenGetter: tokenGetter,
         whitelistedDomains: ['localhost:5000'],
         blacklistedRoutes: ['localhost:5000/login']
       }
     }),
-    AngularFontAwesomeModule,
+    AngularFontAwesomeModule, //OBSOLETE
     SecurityModule,
     PostModule,
+    UserModule,
     GpxUIComponentsModule
     // RouterModule.forRoot(
     //   appRoutes,

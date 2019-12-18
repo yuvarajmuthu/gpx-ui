@@ -24,6 +24,7 @@ export class AppComponent implements OnInit {
 
   title = 'gpx-ui';
   isUserLogged:boolean;
+  isCollaped:boolean = true;
 
   constructor(private  router: Router, 
     private missionService: ComponentcommunicationService, 
@@ -71,7 +72,15 @@ export class AppComponent implements OnInit {
       this.dataShareService.setCurrentUser(user);
     }
   }
-
+  loadUser(){
+    //e.preventDefault();
+    let user:User = this.dataShareService.getCurrentUser();
+    
+    console.log("logged in user username  - " + user.username);
+    let routePath:string = "/user/"+user.username;
+    this.router.navigate([routePath]);
+    //return false;
+  }
   clickTab(event: String){
     console.log("tab button clicked - " + event);
     //console.log("event.target.value " + event.target);
@@ -110,6 +119,7 @@ export class AppComponent implements OnInit {
     }
   }
 
+  //OBSOLETE
   tabclick(evt: any) {
     console.log("tab clicked ", evt);
     if(evt.nextId){
@@ -124,12 +134,18 @@ export class AppComponent implements OnInit {
     }
   }
 
+  route(name:string){
+    let routePath:string = "/"+name;
+    this.router.navigate([routePath]);
+  }
+
+
   logout() {
     //    this.loading = true;
         this.authenticationService.logout();
         //this.missionService.loginChanged(false);
         //this.alertService.success('Logout successful', true);                    
-        //this.router.navigate(['/']);
+        this.router.navigate(['/']);
         
         // this.authenticationService.login(this.model)
         //     .subscribe(

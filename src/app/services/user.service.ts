@@ -23,13 +23,14 @@ export class UserService extends AbstractService{
   resultop:any;
 
   private httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    headers: new HttpHeaders({ 'Content-Type': 'application/json'})
   };
 
   constructor (private http: HttpClient, 
     private dataShareService:DatashareService) {
     super();
-    this.serviceUrl = dataShareService.getServiceUrl() + "/api/social";
+    //this.serviceUrl = dataShareService.getServiceUrl() + "/api/social";
+    this.serviceUrl = this.getUserService();
     this.devMode = isDevMode();
   }
 
@@ -39,6 +40,10 @@ export class UserService extends AbstractService{
   
   getPostService():string{
     return this.dataShareService.getServiceUrl() + "/post";
+  }
+  
+  getSocialService():string{
+    return this.dataShareService.getServiceUrl() + "/api/social";
   }
 
   getUserData(userId:String, external:boolean):Observable<any> { 
@@ -55,7 +60,7 @@ export class UserService extends AbstractService{
 
     //legis represent legislator      
     if(external){  
-      url = '/assets/json/fromService/user-legis.json';  
+      url = '/assets/json/fromService/user-legis.json';   
     }else{
       url = '/assets/json/fromService/user.json';
     }
@@ -116,7 +121,7 @@ export class UserService extends AbstractService{
   */
 
  getRelationStatus(userId:string, districtId:string):Observable<string>{
-  let serviceUrl = this.serviceUrl+"/getRelation";
+  let serviceUrl = this.getSocialService()+"/getRelation";
   //console.log("follow district user.service " + request + " this.serviceUrl " + serviceUrl);
  //let bodyString = JSON.stringify(post); // Stringify payload
   let headers      = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
@@ -147,7 +152,7 @@ export class UserService extends AbstractService{
 }
 
 getFollowersCount(entityId:string):Observable<string>{
-  let serviceUrl = this.serviceUrl+"/getFollowersCount";
+  let serviceUrl = this.getSocialService()+"/getFollowersCount";
 
   let headers      = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
 
@@ -158,7 +163,7 @@ getFollowersCount(entityId:string):Observable<string>{
 }
 
 getFollowers(entityId:string):Observable<any>{
-  let serviceUrl = this.serviceUrl+"/getFollowers";
+  let serviceUrl = this.getSocialService()+"/getFollowers";
 
   let headers      = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
   let myParams = new HttpParams();
@@ -182,16 +187,47 @@ getFollowers(entityId:string):Observable<any>{
   
 }
 
-getRoles(userId:string):Observable<any>{ 
-  let serviceUrl = this.getUserService() +"/legisv1/roles/"+userId;
-  let headers      = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
+getBiodata(userId:string, userType:string):Observable<any>{ 
+  let serviceUrl = this.getUserService() +"/legis/biodata/"+userId+"/";    
+
+
+  //let headers      = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
+  this.httpOptions = {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json', 'userType': userType})
+  };
   return this.http.get(serviceUrl, this.httpOptions)
   .pipe(
     //map((response:Response) => response.json()),
+    tap(_ => this.log(`fetched getBiodata`)),
+    catchError(this.handleError<any>(`Error in getBiodata()`))
+  );                
+}
+
+getRoles(userId:string, isCongress:boolean):Observable<any>{ 
+  let serviceUrl = this.getUserService() +"/legisv1/congress/roles/"+userId;
+
+  let headers      = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
+  return this.http.get(serviceUrl, this.httpOptions)
+  .pipe(
+//    map((response:Response) => response.json()),
     tap(_ => this.log(`fetched getRoles`)),
     catchError(this.handleError<any>(`Error in getRoles()`))
   );                
 }
+
+getOffices(userId:string, isCongress:boolean):Observable<any>{ 
+  
+  let serviceUrl = this.getUserService() +"/legisv1/congress/offices/"+userId;
+
+  let headers      = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
+  return this.http.get(serviceUrl, this.httpOptions)
+  .pipe(
+//    map((response:Response) => response.json()),
+    tap(_ => this.log(`fetched getOffices`)),
+    catchError(this.handleError<any>(`Error in getOffices()`))
+  );                
+}
+
 /*
 getProfileImage(userId:string):Observable<any>{ 
   let serviceUrl = this.getUserService() +"/legisv1/roles/"+userId;
@@ -284,7 +320,7 @@ delete(id: number) {
 }
 
 getImage(userId: string): Observable<Blob> {
-  let serviceUrl = this.getPostService() + "/downloadFile/user/" + userId;
+  let serviceUrl = this.getPostService() + "/downloadFile/user/" + userId + "/";
   console.log("getImage user.service " + serviceUrl);
 
   return this.http.get(serviceUrl, { responseType: 'blob' });

@@ -14,9 +14,9 @@ const routes: Routes = [
   
   //{path: "user", component: UserComponent},
   {path: "user", loadChildren:'./components/user/user.module#UserModule' },
-  {path: "user/:id", loadChildren:'./components/user/user.module#UserModule' },
+  //{path: "user/:id", loadChildren:'./components/user/user.module#UserModule' },
   {path: "group", loadChildren:'./components/group/group.module#GroupModule' },
-  {path: "group/:id", loadChildren:'./components/group/group.module#GroupModule' },
+  //{path: "group/:id", loadChildren:'./components/group/group.module#GroupModule' },
   //{path: "user/legis/:id", component: UserModule }, 
   // { path: 'distrcit',      component: HeroDetailComponent }, 
   // {
@@ -32,8 +32,8 @@ const routes: Routes = [
   { path: 'searchLegislator', component: SearchlegislatorsComponent },
   { path: 'news', component: PostComponent, canActivate: [AuthGuard] },
   { path: 'register', component: RegisterComponent },
-  { path: 'login', component: LoginComponent },  
-  { path: '',   redirectTo: '/searchLegislator', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },   
+  { path: '',   redirectTo: '/news', pathMatch: 'full' },
 
 ];
 
