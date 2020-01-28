@@ -1,9 +1,12 @@
-.legisProfileData{
-    display:inline-block;
-  }
-  
-.role{
-    border: 1px solid lightblue;
-    border-radius: 5px;
+.roleProfileCard {
+    background-color: #fcfcfc;
+    margin-top: 27px;
+    border: solid 1px #92948efa;
+}
 
-  }
+.roleProfileCard:before {
+    display: block;
+    background-image: linear-gradient(-272deg,#c8f54cfa,#b3cf67fa);
+    content: '';
+    height: 4px;
+}

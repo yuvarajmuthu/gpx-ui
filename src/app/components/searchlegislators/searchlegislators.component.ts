@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, Output, OnInit, ChangeDetectorRef} from '@angular/core';
 import { Router } from "@angular/router";
 
 // import 'rxjs/add/operator/map';
@@ -13,7 +13,7 @@ import { Legislator } from '../../models/legislator';
 
 import {LegislatorComponent} from '../../components/legislator/legislator.component';
 
-
+import {GAddressSearchComponent} from '../../components/g-address-search/g-address-search.component';
 
 @Component({
   selector: 'app-searchlegislators',
@@ -45,7 +45,8 @@ export class SearchlegislatorsComponent implements OnInit {
   constructor(private  router: Router, 
     private legislatorsService: LegislatorService, 
     private missionService: ComponentcommunicationService, 
-    private alertService:AlertService) {
+    private alertService:AlertService,
+    private changeDetector : ChangeDetectorRef) {
 
     if (this.stateData){
       //this.getCongressLegislatorsByLatLong();
@@ -175,6 +176,13 @@ private getLatitudeLongitude(callback, address) {
     //       this.congressDistricts.push(district);
     //     }
     //  });    
+  }
+
+  getAddress(addressEvent:Event){
+    console.log("Address - " + addressEvent['formatted_address']);
+    this.address = addressEvent['formatted_address'];
+    this.changeDetector.detectChanges();
+
   }
 
 //DEPRECATED

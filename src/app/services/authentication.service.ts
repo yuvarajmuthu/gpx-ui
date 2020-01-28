@@ -19,6 +19,7 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 })
 export class AuthenticationService extends AbstractService{
   serviceUrl:string;
+  loggedUser:User = null;
 
 //  private currentUserSubject = new BehaviorSubject<User>(new User()); 
  // private currentUser = this.currentUserSubject.asObservable();
@@ -35,20 +36,28 @@ export class AuthenticationService extends AbstractService{
     private jwtHelper: JwtHelperService) {
       super();
       this.serviceUrl = dataShareService.getServiceUrl();
+
+      if(jwtHelper.isTokenExpired()){
+        this.alertService.success('User session expired', true);
+        this.logout();
+        //redirect to login page ???
+      }
+/*
       if(localStorage.getItem('currentUserToken')){
-        //this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUserToken')));
         let user = new User();
         user.token = localStorage.getItem('currentUserToken');
-        //this.currentUserSubject = new BehaviorSubject<User>(user); 
-        //this.currentUser = this.currentUserSubject.asObservable();
+        user.username = localStorage.getItem('currentUserName');
+        this.loggedUser = this.dataShareService.getCurrentUser();
         dataShareService.setCurrentUser(user);
       }
+      */
     }    
   /*
   public get currentUserValue(): User {
       return this.currentUserSubject.value;
   }
 */
+
   login(user:User) {
 
       let bodyString = JSON.stringify(user); // Stringify payload
@@ -78,10 +87,11 @@ export class AuthenticationService extends AbstractService{
           let userObj = new User();
           userObj.token = localStorage.getItem('currentUserToken');
           userObj.username = user.username; 
+          localStorage.setItem('currentUserName', user.username);          
           this.dataShareService.setCurrentUser(userObj);
 
-//          this.componentcommunicationService.loginChanged(true);
-          this.alertService.success('Login successful', true);
+          this.componentcommunicationService.loginChanged(true);
+          this.alertService.success('Login successful', true); 
           
           return true;
         })
@@ -141,9 +151,10 @@ return this.http.post(loginServiceUrl, user, this.httpOptions)
   logout() {
       // remove user from local storage to log user out
       localStorage.removeItem('currentUserToken');
+      localStorage.removeItem('currentUserName');
       //this.currentUserSubject.next(null);
       this.dataShareService.setCurrentUser(null);
-  //    this.componentcommunicationService.loginChanged(false);
+      this.componentcommunicationService.loginChanged(false);
       this.alertService.success('Logout successful', true);
   }
 

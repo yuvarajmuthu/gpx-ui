@@ -16,7 +16,7 @@ import { LegislatorService } from '../../../../services/legislator.service';
 export class UserbannertemplateComponent extends AbstractTemplateComponent implements OnInit {
 
   id = "upDefault";
-  
+  profileIcon = "person";
   firstName:string = "";//"Pennsylvania's 14th congressional district";
   lastName:string = "";//"Pennsylvania's 14th congressional district includes the entire city of Pittsburgh and parts of surrounding suburbs. A variety of working class and majority black suburbs located to the east of the city are included, such as McKeesport and Wilkinsburg. Also a major part of the district are number of middle class suburbs that have historic Democratic roots, such as Pleasant Hills and Penn Hills. The seat has been held by Democrat Mike Doyle since 1995. In the 2006 election, he faced Green Party candidate Titus North and returned to the house with 90% of the vote.";
   userName:string = "";
@@ -93,7 +93,7 @@ export class UserbannertemplateComponent extends AbstractTemplateComponent imple
       for (let profileTemplates of this.viewingUser['profileTemplates']){
         //console.log("reading template component properties: ", profileTemplates['profile_template_id']);
         //this.templateType.push(profileData['profile_template_id']);
-        if(this.id == profileTemplates['profile_template_id']){
+        if(this.id == profileTemplates['profileTemplateId']){
           this.displayProperties = profileTemplates['properties'];
           break;  
         }

@@ -22,6 +22,11 @@ export class Usercard1Component implements OnInit {
   following:boolean = false;
   requestedToFollow:boolean = false;
   followRequestRejected:boolean = false;
+  awaitingRequest:boolean = false;
+
+  followCntrlLabel:string = "";
+  followCntrlCSS:string="";
+  followStatusCSS:string="";
 
 
   constructor(private  router: Router, 
@@ -33,6 +38,15 @@ export class Usercard1Component implements OnInit {
     }  
 
     this.loggedUser = this.datashareService.getCurrentUser();
+
+    if(this.loggedUser && this.loggedUser.username){
+      this.getRelationStatus(this.loggedUser.username, this.user.username);
+    }else{
+      this.followCntrlLabel = "Join to Follow";
+      this.followCntrlCSS = "btn btn-primary";
+      this.followStatusCSS = "fa fa-plus-circle";
+    }
+
   } 
 
   getProfileSmImage(userId:string) {
@@ -62,7 +76,31 @@ export class Usercard1Component implements OnInit {
     this.router.navigate([url]);
     return false;
   }
+  getRelationStatus(entity:string, profileId:string){
+ 
+    this.userService.getRelationStatus(entity, profileId)
+    .subscribe(
+      (result) => {
+          console.log("getRelationStatus response " + result);
 
+          if(result == "REQUESTED"){
+            this.requestedToFollow = true; 
+          }else if(result == "FOLLOWING"){
+            this.following = true;
+          }else if(result == "REJECTED"){
+            this.followRequestRejected = true; 
+          }else if(result == "AWAITING"){
+            this.awaitingRequest = true;
+          }
+          this.setFollowCntrlLabel();
+          this.setFollowCntrlCSS();
+          this.setFollowStatusCSS();
+
+        },
+      (err) => {
+        console.log("Error ", err);
+      });
+  }
   followEntity(){
 
     var followURequest = {};
@@ -74,13 +112,24 @@ export class Usercard1Component implements OnInit {
     followURequest["connectionUserId"] = this.user.username;
     /*MAY NOT BE REQUIRED - END */
 
-    followURequest["sourceEntityId"] = this.loggedUser.username;//this.datashareService.getCurrentUserId();
-    followURequest["sourceEntityType"] = "USER";
+    followURequest["sourceEntityId"] = this.loggedUser ? this.loggedUser.username : "";//this.datashareService.getCurrentUserId();
+    //followURequest["sourceEntityType"] = "USER";
     followURequest["targetEntityId"] = this.user.username;
-    
-    followURequest["targetEntityType"] = "USER";
+    /*
+    if(this.datashareService.getViewingUser()['isLegislator']){
+      followURequest["targetEntityType"] = "LEGISLATOR";
+
+    }else{
+      followURequest["targetEntityType"] = "PUBLICUSER";
+    }*/
+    let userType:string = "PUBLICUSER";
+    if(this.user && this.user['userType'])
+      userType = this.user['userType'];
+
+    followURequest["targetEntityType"] = userType;
+
     followURequest["status"] = "REQUESTED";            
-    console.log("Profile data " + JSON.stringify(followURequest));      
+    console.log("Profile data " + JSON.stringify(followURequest));    
 
     this.userService.followPerson(JSON.stringify(followURequest))
     .subscribe(
@@ -94,13 +143,59 @@ export class Usercard1Component implements OnInit {
           }else if(result.status == "REJECTED"){
             this.followRequestRejected = true; 
           }
-
+          this.setFollowCntrlLabel();
+          this.setFollowCntrlCSS();
+          this.setFollowStatusCSS();
         },
       (err) => {
         console.log("Error ", err);
       });
       return false;
   }
+  setFollowCntrlLabel(){
 
+    if(this.requestedToFollow){
+      this.followCntrlLabel = "Request Sent";
+    }else if(this.following){
+      this.followCntrlLabel = "Following";
+    }else if(this.followRequestRejected){
+      this.followCntrlLabel = "Request Rejected";
+    }else if(this.awaitingRequest){
+      this.followCntrlLabel = "Accept/Reject";
+    }else{
+      this.followCntrlLabel = "Follow";
+    }
+
+
+  }
+
+  setFollowStatusCSS(){
+
+    if(this.requestedToFollow){
+      this.followStatusCSS = "fa fa-exclamation-circle";
+    }else if(this.following){
+      this.followStatusCSS = "fa fa-check-circle";
+    }else if(this.followRequestRejected){
+      this.followStatusCSS = "fa fa-thumbs-down";
+    }else{
+      this.followStatusCSS = "fa fa-plus-circle";
+    }
+
+
+  }
+
+  setFollowCntrlCSS(){
+
+    if(this.requestedToFollow){
+      this.followCntrlCSS = "btn btn-outline-warning glyphicon glyphicon-ok";
+    }else if(this.following){
+      this.followCntrlCSS = "btn btn-outline-success glyphicon glyphicon-ok";
+    }else if(this.followRequestRejected){
+      this.followCntrlCSS = "btn btn-outline-danger glyphicon glyphicon-ok";
+    }else{
+      this.followCntrlCSS = "btn btn-outline-primary";
+    }
+
+  }
 
 }

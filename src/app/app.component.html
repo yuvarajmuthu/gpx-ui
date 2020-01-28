@@ -26,29 +26,96 @@ version 4.2.1
           <li class="nav-item">
               <button type="button" class="btn btn-outline-danger" (click)="route('group')">District</button>
           </li>
+          
+          <li class="nav-item">
+            <button type="button" class="btn btn-outline-danger" (click)="route('request')">
+              <i class="ti ti-bell">Connection Requests</i>
+            </button>            
+        </li>
+        
     </ul>       
 <!--
     <div *ngIf="isUserLogged">      
           <i class="fa fa-user"></i>
           <a class="" [routerLink]="" title="" data-ripple="" (click)="loadUser()"></a>                
     </div>
--->    
+-->
+<!--
+ 		<div class="user-img">
     <ul class="navbar-nav ml-auto nav-flex-icons" *ngIf="isUserLogged">
         <li class="nav-item avatar">
-          <a class="nav-link p-0" [routerLink]="" (click)="loadUser()">
+          <a id="dropdownBasic2" class="nav-link p-0" [routerLink]="" (click)="loadUser()">
             <img src="https://mdbootstrap.com/img/Photos/Avatars/avatar-5.jpg" class="rounded-circle z-depth-0 gpx-avatar"
               alt="avatar image">
-          </a>
-
+            </a>
         </li>
+        
     </ul>
-
+    </div>
     <form class="form-inline my-2 my-lg-0">
       <button *ngIf="!isUserLogged" class="btn btn-outline-warning my-2 my-sm-0" type="submit" (click)="route('register')">Register</button>
       <button *ngIf="!isUserLogged" class="btn btn-outline-success my-2 my-sm-0" type="submit" (click)="route('login')">Login</button>
       <button *ngIf="isUserLogged" class="btn btn-outline-success my-2 my-sm-0" type="submit" (click)="logout()">Logout</button>      
     </form>
+  -->
   </div>
+<!--
+  <div class="btn-group mr-3">
+    <button type="button" class="btn btn-outline-warning" (click)="loadUser()">
+        <img [src]="profileSmImage" class="rounded-circle z-depth-0 gpx-avatar"
+          alt="avatar image"> 
+
+    </button>
+    <div class="btn-group" ngbDropdown role="group" aria-label="Button group with nested dropdown">
+      <button class="btn btn-outline-warning dropdown-toggle-split" ngbDropdownToggle></button>
+    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+      <button *ngIf="!isUserLogged" class="dropdown-item" type="submit" (click)="route('register')">Register</button>
+      <button *ngIf="!isUserLogged" class="dropdown-item" type="submit" (click)="route('login')">Login</button>
+      <button *ngIf="isUserLogged" class="dropdown-item" type="submit" (click)="logout()">Logout</button>      
+    </div>
+    </div>
+  </div>
+-->
+  <ng-template #popContent>
+    <div class="list-group">
+      <button *ngIf="!isUserLogged" class="btn btn-outline-warning list-group-item" type="submit" (click)="route('register')">Register</button>
+      <button *ngIf="!isUserLogged" class="btn btn-outline-warning list-group-item" type="submit" (click)="route('login')">Login</button>
+      <button *ngIf="isUserLogged" class="btn btn-outline-warning list-group-item" type="submit" (click)="loadUser()">View Profile</button>      
+      <button *ngIf="isUserLogged" class="btn btn-outline-warning list-group-item" type="submit" (click)="logout()">Logout</button>      
+    </div> 
+
+  </ng-template>
+
+  <button type="button" class="btn btn-outline-secondary mr-2" placement="bottom"
+  [ngbPopover]="popContent" popoverTitle="">
+    <img [src]="profileSmImage" class="rounded-circle z-depth-0 gpx-avatar"
+    alt="avatar image"> 
+  </button>
+<!--
+  <div ngbDropdown class="d-inline-block">
+    <a ngbDropdownToggle class="nav-link p-0" [routerLink]="" (click)="loadUser()">    
+    <img [src]="profileSmImage" class="rounded-circle z-depth-0 gpx-avatar"
+      alt="avatar image"> 
+    </a>
+
+    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+      <button *ngIf="!isUserLogged" class="dropdown-item" type="submit" (click)="route('register')">Register</button>
+      <button *ngIf="!isUserLogged" class="dropdown-item" type="submit" (click)="route('login')">Login</button>
+      <button *ngIf="isUserLogged" class="dropdown-item" type="submit" (click)="logout()">Logout</button>      
+    </div>
+  </div>
+  -->
+  <!--
+  <div ngbDropdown class="d-inline-block">
+    <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Create Page</button>
+    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+      <button class="dropdown-item" >Create District</button>
+      <button class="dropdown-item" >Create Legislator</button>
+      <button class="dropdown-item" >Create User</button>
+      <button class="dropdown-item" >Create Party</button>
+    </div>
+  </div>
+-->
     <!--
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
@@ -78,7 +145,6 @@ version 4.2.1
     
 </nav>
 <!-- VIEW AREA -->
-
 <div class="container">
 
   

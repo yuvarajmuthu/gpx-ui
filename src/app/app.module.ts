@@ -20,6 +20,7 @@ import {SecurityModule} from './components/security/security.module';
 import {PostModule} from './components/post/post.module';
 import {UserModule} from './components/user/user.module';
 import {GpxUIComponentsModule} from './components/gpx-uicomponents/gpx-uicomponents.module';
+import {ConnectionModule} from './components/connection/connection.module';
 
 import { AppComponent } from './app.component';
 
@@ -29,6 +30,9 @@ import { SearchlegislatorsComponent } from './components/searchlegislators/searc
 import { LegislatorComponent } from './components/legislator/legislator.component';
 import { PositionComponent } from './components/position/position.component';
 import { PartyComponent } from './components/party/party.component';
+import { ProtectedComponent } from './components/protected/protected.component';
+import { GAddressSearchComponent } from './components/g-address-search/g-address-search.component';
+
 //import {UserComponent} from './components/user/user/user.component';
 
 //import { GpxInputComponent } from './gpx-input/gpx-input.component';
@@ -61,6 +65,8 @@ export function tokenGetter() {
     LegislatorComponent,
     PositionComponent,
     PartyComponent,
+    ProtectedComponent,
+    GAddressSearchComponent,
     //UserComponent
     //GpxInputComponent,
   ],
@@ -90,7 +96,8 @@ export function tokenGetter() {
     SecurityModule,
     PostModule,
     UserModule,
-    GpxUIComponentsModule
+    GpxUIComponentsModule,
+    ConnectionModule
     // RouterModule.forRoot(
     //   appRoutes,
     //   { enableTracing: true } // <-- debugging purposes only

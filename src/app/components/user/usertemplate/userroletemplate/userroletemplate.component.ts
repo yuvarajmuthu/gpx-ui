@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef  } from '@angular/core';
+import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
 import {AbstractTemplateComponent} from '../../abstractTemplateComponent';
 
 import {DatashareService} from '../../../../services/datashare.service';
@@ -17,16 +18,20 @@ import { Observable} from 'rxjs';
 
 export class UserroletemplateComponent  extends AbstractTemplateComponent  implements OnInit  {
   id = "upRole";
+  profileIcon = "group";
   //roles:any = null;
   roles:JSON[] = [];
   displayProperties = [];
   //role = {};
   viewingUser={}; 
+  roleTemplateForm: FormGroup;
+
   constructor(private legislatorsService2:LegislatorService, 
     private userService2:UserService, 
     private dataShareService2:DatashareService, 
     private missionService2: ComponentcommunicationService, 
-    private changeDetector : ChangeDetectorRef) {
+    private changeDetector : ChangeDetectorRef,
+    private fbuilder: FormBuilder) {
   
       super(legislatorsService2, dataShareService2, missionService2);
   
@@ -53,7 +58,7 @@ export class UserroletemplateComponent  extends AbstractTemplateComponent  imple
     for (let profileTemplates of this.viewingUser['profileTemplates']){
       //console.log("reading template component properties: ", profileTemplates['profile_template_id']);
       //this.templateType.push(profileData['profile_template_id']);
-      if(this.id == profileTemplates['profile_template_id']){
+      if(this.id == profileTemplates['profileTemplateId']){
         this.displayProperties = profileTemplates['properties'];
         break;  
       }
@@ -84,7 +89,9 @@ export class UserroletemplateComponent  extends AbstractTemplateComponent  imple
           //this.role = JSON.parse(JSON.stringify(data[0]));
           //this.role['term'] = 'term';
           this.roles= data;
-          this.changeDetector.detectChanges();
+          //this.changeDetector.detectChanges();
+          this.createFormGroup();
+ 
         });
           /*
           data.forEach(element => {
@@ -97,6 +104,20 @@ export class UserroletemplateComponent  extends AbstractTemplateComponent  imple
 //      });
 
   //  });
+  }
+
+  createFormGroup() {
+    //this.biodataTemplateForm = this.fbuilder.group({});
+    //let struct:string = "\"{";//"new FormGroup({";
+    this.roleTemplateForm = this.fbuilder.group({});
+
+    this.displayProperties.forEach((element, index) => {
+      let value = this.legislator[element['propId']];
+      console.log('element[propId] ', element['propId'], ' this.legislator[element[propId]] ', this.legislator[element['propId']]);
+      this.roleTemplateForm.setControl(element['propId'], new FormControl(value));
+      //this.biodataTemplateForm.setControl(element['propId'], null);
+    });
+    this.changeDetector.detectChanges();
   }
 
   getData():string{

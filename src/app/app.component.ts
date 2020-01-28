@@ -25,6 +25,8 @@ export class AppComponent implements OnInit {
   title = 'gpx-ui';
   isUserLogged:boolean;
   isCollaped:boolean = true;
+  profileSmImage:any = "assets/images/avatar1.png";
+  isImageLoading:boolean = false;
 
   constructor(private  router: Router, 
     private missionService: ComponentcommunicationService, 
@@ -52,6 +54,7 @@ export class AppComponent implements OnInit {
       data => {
         console.log("Received data from missionService.loginChanged$.subscribe ", data);
         this.isUserLogged = data;
+        this.updateUserNavBar();
     });
 
     //SHOULD BE PART OF LOGIN PROCESS
@@ -69,9 +72,22 @@ export class AppComponent implements OnInit {
     if(localStorage.getItem('currentUserToken')){
       let user = new User();
       user.token = localStorage.getItem('currentUserToken');
+      user.username = localStorage.getItem('currentUserName');
       this.dataShareService.setCurrentUser(user);
+
+      this.getProfileSmImage(user.username);
     }
   }
+
+  updateUserNavBar(){
+    if(this.isUserLogged){
+      let user:User = this.dataShareService.getCurrentUser();
+      this.getProfileSmImage(user.username);
+    }else{
+      this.profileSmImage = "assets/images/avatar1.png";
+    }
+  }
+
   loadUser(){
     //e.preventDefault();
     let user:User = this.dataShareService.getCurrentUser();
@@ -175,4 +191,27 @@ export class AppComponent implements OnInit {
       this.router.navigate(['/partyProfile']);
     }
   }
+
+  getProfileSmImage(userId:string) {
+    this.isImageLoading = true;
+    this.userService.getImage(userId).subscribe(data => {
+      this.createImageFromBlob(data);
+      this.isImageLoading = false;
+    }, error => {
+      this.isImageLoading = false;
+      console.log(error);
+    });
+  } 
+  
+  createImageFromBlob(image: Blob) {
+    let reader = new FileReader();
+    reader.addEventListener("load", () => {
+      this.profileSmImage = reader.result; 
+    }, false);
+  
+    if (image) {
+      reader.readAsDataURL(image);
+    }
+  }
+
 }

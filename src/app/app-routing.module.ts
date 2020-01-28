@@ -8,6 +8,9 @@ import { SearchlegislatorsComponent } from './components/searchlegislators/searc
 import {RegisterComponent} from './components/security/register/register.component';
 import {LoginComponent} from './components/security/login/login.component';
 import {PostComponent} from './components/post/post.component';
+import {ProtectedComponent} from './components/protected/protected.component';
+//import {ConnectionrequestComponent} from './components/connection/connectionrequest/connectionrequest.component';
+
 import { AuthGuard } from '../app/auth/auth.guard';
 
 const routes: Routes = [
@@ -31,9 +34,11 @@ const routes: Routes = [
   // { path: '**', component: PageNotFoundComponent }
   { path: 'searchLegislator', component: SearchlegislatorsComponent },
   { path: 'news', component: PostComponent, canActivate: [AuthGuard] },
+  { path: 'secure', component: ProtectedComponent, canActivate: [AuthGuard] },
   { path: 'register', component: RegisterComponent },
-  { path: 'login', component: LoginComponent },   
-  { path: '',   redirectTo: '/news', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },  
+  { path: 'request', loadChildren:'./components/connection/connection.module#ConnectionModule' },   
+  { path: '',   redirectTo: '/searchLegislator', pathMatch: 'full' },
 
 ];
 

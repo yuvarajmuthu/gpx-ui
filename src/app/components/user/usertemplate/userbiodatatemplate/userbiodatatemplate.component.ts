@@ -19,6 +19,8 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
   //legisId:string = "";
   
   id = "upCongressLegislatorExternal";
+  profileDataId:string = "";
+  profileIcon = "person";
   firstName:string = "";//"Pennsylvania's 14th congressional district";
   lastName:string = "";//"Pennsylvania's 14th congressional district includes the entire city of Pittsburgh and parts of surrounding suburbs. A variety of working class and majority black suburbs located to the east of the city are included, such as McKeesport and Wilkinsburg. Also a major part of the district are number of middle class suburbs that have historic Democratic roots, such as Pleasant Hills and Penn Hills. The seat has been held by Democrat Mike Doyle since 1995. In the 2006 election, he faced Green Party candidate Titus North and returned to the house with 90% of the vote.";
   userName:string = "";
@@ -37,6 +39,8 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
   biodataTemplateForm: FormGroup;
   externalUser:boolean;
 
+  //isEditable:boolean = false;
+
   //legislator: Legislator;
   //resultop:any;
   //keys = [];
@@ -48,7 +52,7 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
     private dataShareService2:DatashareService, 
     private missionService2: ComponentcommunicationService,
     private changeDetector : ChangeDetectorRef,
-    private fbuilder: FormBuilder) {
+    private fbuilder: FormBuilder) { 
   
       super(legislatorsService2, dataShareService2, missionService2);
   
@@ -68,7 +72,7 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
           this.isProfileInEditMode = data;
           this.changeDetector.detectChanges();
 
-          if(!data){//Save Profile
+          if(!data){//Save or Cancel Edit Profile ????
             this.saveProfile();
           }
 
@@ -98,15 +102,13 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
     this.loadDisplayProperties();     
   
     this.loadTemplateData();   
-    this.biodataTemplateForm = this.fbuilder.group({});
-
   }
     
     loadDisplayProperties(){ 
       for (let profileTemplates of this.viewingUser['profileTemplates']){
         //console.log("reading template component properties: ", profileTemplates['profile_template_id']);
         //this.templateType.push(profileData['profile_template_id']);
-        if(this.id == profileTemplates['profile_template_id']){
+        if(this.id == profileTemplates['profileTemplateId']){
           this.displayProperties = profileTemplates['properties'];
           break;  
         }
@@ -118,130 +120,80 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
       let userType:string = this.externalUser?"external": "internal";
       this.userService2.getBiodata(this.profileUserId, userType)
       .subscribe((response) => {
+        this.profileDataId = response['id'];
         this.biodata= response['data'];
+        
         console.log('biodata response data ', this.biodata);
-        this.changeDetector.detectChanges();
-      });
-
-      /*
-        this.userService2.getUserData(this.profileUserId, true).subscribe(
-          data => {
-          this.userData = data;
-          console.log("User data from service: ", this.userData);
-  
-  
-            //getting the available profile templates for this user type
-            this.profilesTemplates = this.userData['profile'];
-            console.log("profile templates: ", this.profilesTemplates);
-            for (let profileTemplates of this.profilesTemplates){
-              console.log("reading template component properties: ", profileTemplates['profile_template_id']);
-              //this.templateType.push(profileData['profile_template_id']);
-              if(this.id == profileTemplates['profile_template_id']){
-                this.templateProperties = profileTemplates['properties'];
-                break;  
-              }
-            }
-  
-  
-            //getting the data for this user profile
-            this.profilesData = this.userData['profileData'];
-            console.log("profile data: ", this.profilesData);
-  
-            for (let profileData of this.profilesData){
-              console.log("loading template component: ", profileData['profile_template_id']);
-              //this.templateType.push(profileData['profile_template_id']);
-              if(this.id == profileData['profile_template_id']){
-                this.templateData = profileData['data'];
-                break;  
-              }
-            }
-  
-            for (let dataObj of this.templateData){
-              let keys = [];
-              keys = Object.keys(dataObj);
-              console.log("Template data keys " + keys[0] + ":" + dataObj[keys[0]]);
-              this[keys[0]] = dataObj[keys[0]];
-            }
-  
-          }
-      );
-      */
-  
+        
+        this.createFormGroup();
+      });  
     }
-  
+
+    /*
     allowed():boolean{
-        let permission:boolean = this.dataShareService2.checkPermissions();
-        //console.log("allowed() - " + permission);
-  
+        let permission:boolean = this.dataShareService2.checkPermissions();  
         return permission;
     }
-/*
+    */
+
     createFormGroup() {
       this.biodataTemplateForm = this.fbuilder.group({});
-      let struct:string = "\"{";//"new FormGroup({";
-      this.displayProperties.forEach((element, index) => {
-        console.log('element[propId] ', element['propId'], ' this.legislator[element[propId]] ', this.legislator[element['propId']]);
-        this.biodataTemplateForm.setControl(element['propId'], new FormControl(this.legislator[element['propId']]));
-    
-    //    let control = new FormControl();
-        
-        if(index === this.displayProperties.length-1){//last item
-          struct = struct + element['propId'] + ": new FormControl()";
-        }else{
-          struct = struct + element['propId'] + ": new FormControl(),";
-        }
-        console.log("index " + index);
 
+      this.displayProperties.forEach((element, index) => {
+        let value = this.biodata[element['propId']];
+        this.biodataTemplateForm.setControl(element['propId'], new FormControl(value));
       });
-//      struct = struct + "})";
-      struct = struct + "}\"";
-      return struct;//JSON.parse(struct);
-/*
-      return new FormGroup({
-        personalData: new FormGroup({
-          email: new FormControl(),
-          mobile: new FormControl(),
-          country: new FormControl()
-         }),
-        requestType: new FormControl(),
-        text: new FormControl()
-      });
-      
+      this.changeDetector.detectChanges();
     }
-    */
-    getDisplay(){
+
+    getFormData():any{
       console.log("Object.assign({}, this.biodataTemplateForm.value) ", Object.assign({}, this.biodataTemplateForm.value));
       const result: Legislator = Object.assign({}, this.biodataTemplateForm.value);
-      console.log("Legislator form ", result.first_name);
-
+      console.log("Biodata form ", result);
+      return result;
     }
+
     //GET TEMPLATE FORM DATA
     //SHOULD GET FORM DATA, INSTEAD OF PREVIOUSLY LOADED STATIC OBJECT DATA
     getData():string{ 
       let data = {};
-      //data["firstName"] = this.firstName;
-      //data["lastName"] = this.lastName;
   
       this.displayProperties.forEach(element => {
-        //console.log("Property ", element['propId']);
-        //console.log("Property value", this.legislator[element['propId']]);  
-        data[element['propId']] = this.legislator[element['propId']];
+        data[element['propId']] = this.biodata[element['propId']];
       });
 
-      let dataString:string = JSON.stringify(data);
-      console.log("TemplateIntroductionComponent data " + dataString);
-      return dataString;
+      return JSON.stringify(data);
     }
   
     saveProfile(){
-      this.data["profile_template_id"] = this.id;
-      this.data["username"] = this.profileUserId; // how about for user updating other passive profile ?
-      this.data["data"] = this.getData();
-
-
+      this.data["id"] = this.profileDataId;
+      this.data["profileTemplateId"] = this.id;
+      this.data["entityId"] = this.profileUserId; // how about for user updating other passive profile ?
+      this.data["data"] = this.getFormData();
       console.log("Data " + JSON.stringify(this.data));
-  //save
+      this.userService2.updateProfileData(this.data).subscribe(
+
+      );
+
+      this.isProfileInEditMode = false;
     }
-  
+
+    editProfile(){
+      this.isProfileInEditMode = true;  
+    }
+    
+    cancelEditProfile(){
+      this.isProfileInEditMode = false;
+      
+      //Restoring old values
+      this.createFormGroup();
+
+
+    }
+
+    deleteProfile(){
+
+    }
+
   }
   

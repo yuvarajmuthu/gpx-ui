@@ -98,11 +98,8 @@
                                     -->
                                         <div class="text-right" *ngIf="!isSelfProfile">
                                         <div ngbDropdown class="d-inline-block">
-                                            <button id="dropdownFollow" ngbDropdownToggle *ngIf="following" type="button" class="btn btn-success glyphicon glyphicon-ok">Following</button>       
-                                            <button id="dropdownFollow" ngbDropdownToggle *ngIf="requestedToFollow" type="button" class="btn btn-success glyphicon glyphicon-ok">Request sent</button>       
-                                            <button id="dropdownFollow" ngbDropdownToggle *ngIf="followRequestRejected" type="button" class="btn btn-success glyphicon glyphicon-ok">Request Rejected</button>       
-                                            <button id="dropdownFollow" ngbDropdownToggle *ngIf="!following && !requestedToFollow && !followRequestRejected" type="button" class="btn btn-primary" (click)="followEntity()">
-                                                <span class="fa fa-plus-circle"></span> Follow
+                                            <button id="dropdownFollow" ngbDropdownToggle type="button" [class]="followCntrlCSS" (click)="followEntity()">
+                                                <span [class]="followStatusCSS"></span>{{followCntrlLabel}} 
                                             </button> 
                                             <div ngbDropdownMenu aria-labelledby="dropdownFollow">
                                             <button class="dropdown-item" (click)="test()">Cancel</button>
@@ -188,6 +185,37 @@
                                         -->                            
                                         </aside>
                                     </div>
+<!--
+                                            <div class="card card-nav-tabs">
+                                                <div class="card-header card-header-primary">
+                                                    <div class="nav-tabs-navigation">
+                                                        <div class="nav-tabs-wrapper">
+                                                            <ul class="nav nav-tabs" data-tabs="tabs">
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link active" href="#bio_data" data-toggle="tab">
+                                                                        <i class="material-icons">person</i>
+                                                                        BioData 
+                                                                    </a>
+                                                                </li>
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link" href="#role" data-toggle="tab">
+                                                                        <i class="material-icons">group</i>
+                                                                        Role
+                                                                    </a>
+                                                                </li>
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link" href="#office" data-toggle="tab">
+                                                                        <i class="material-icons">business</i>
+                                                                        Office
+                                                                    </a>
+                            
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                </div>
+                                            -->
                                     <!-- Main stage area -->
                                     <div class="col-lg-6 cols-item2">
                                             <div id="ActivityCollapse" [ngbCollapse]="isActivityCollapsed">
@@ -195,21 +223,86 @@
                                             </div>   
                                         <div id="ProfileCollapse" [ngbCollapse]="isProfileCollapsed">
                                           <!--  <div class="col-lg-12 col-sm-8">-->
-                                            
+                                            <div class="card card-nav-tabs">
+                                                <div class="card-header card-header-primary">
+                                                    <div class="nav-tabs-navigation">
+                                                        <div class="nav-tabs-wrapper">
+                                                            <ul class="nav nav-tabs" data-tabs="tabs">
+                                                               
+                                                                <li class="nav-item" *ngFor="let profileTemplate of profilesTemplates">
+
+                                                                    <a class="nav-link active" data-toggle="tab" [routerLink]="" (click)="loadTemplate(profileTemplate.profileTemplateId)">
+                                                                        <i class="material-icons">{{profileTemplate.profileIcon}}</i>
+                                                                        {{profileTemplate.name}}
+                                                                    </a>
+                                                                </li>
+                                                            
+                                                                <!--
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link active" href="#bio_data" data-toggle="tab">
+                                                                        <i class="material-icons">person</i>
+                                                                        BioData
+                                                                    </a>
+                                                                </li>
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link" href="#role" data-toggle="tab">
+                                                                        <i class="material-icons">group</i>
+                                                                        Role
+                                                                    </a>
+                                                                </li>
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link" href="#office" data-toggle="tab">
+                                                                        <i class="material-icons">business</i>
+                                                                        Office
+                                                                    </a>
+                            
+                                                                </li>
+                                                            -->
+                                                                <li *ngIf="isProfileEditable()" class="nav-item">
+                                                                    <div ngbDropdown class="d-inline-block">
+                                                                        <button class="btn btn-outline-primary" id="dropdownAddSection" ngbDropdownToggle>Add Section</button>
+                                                                        <div ngbDropdownMenu aria-labelledby="dropdownAddSection">
+                                                                        <button class="dropdown-item" *ngFor="let profileTemplate of profilesTemplates" (click)="loadTemplate(profileTemplate.profileTemplateId)">{{profileTemplate.name}}</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                                <li *ngIf="isUserLogged()" class="nav-item">
+                                                                    <div>
+                                                                        <button type="button" class="btn btn-primary" (click)="editProfile()">{{editLabel}}</button>
+                                                                        <button type="button" *ngIf="isProfileEditable()" class="btn btn-primary" (click)="cancelEditProfile()">Cancel Edit</button>
+                                                                     </div>
+                                                                </li>
+
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="card-body ">
+                                                    <div class="tab-content text-center">
+                                                        <div class="tab-pane active" id="templateType">
+                                                            <app-usertemplate [type]="templateType"></app-usertemplate> 
+                                                        </div>
+                                                    </div>
+                                                </div>            
+                                            </div>
+                                            <!--HORIZONTAL ITEMS FOR PROFILES / ADD SECTION IN EDIT MODE-->
+                                            <!--
                                                     <div class="timeline-info">
-                                                            <ul class="naves"> <!--HORIZONTAL ITEMS FOR PROFILES / ADD SECTION IN EDIT MODE-->
+                                                            <ul class="naves"> 
+                                                                
                                                                 
                                                                 <li *ngFor="let profileTemplate of profilesTemplates">
                                                                     <i class="fa fa-user"></i>
 
-                                                                    <a class="" [routerLink]="" title="" data-ripple="" (click)="loadTemplate(profileTemplate.profile_template_id)">{{profileTemplate.name}}</a>
+                                                                    <a class="" [routerLink]="" title="" data-ripple="" (click)="loadTemplate(profileTemplate.profileTemplateId)">{{profileTemplate.name}}</a>
                                                                 </li>
                                                                     
                                                                 <li *ngIf="isProfileEditable()">
                                                                     <div ngbDropdown class="d-inline-block">
                                                                         <button class="btn btn-outline-primary" id="dropdownAddSection" ngbDropdownToggle>Add Section</button>
                                                                         <div ngbDropdownMenu aria-labelledby="dropdownAddSection">
-                                                                        <button class="dropdown-item" *ngFor="let profileTemplate of profilesTemplates" (click)="loadTemplate(profileTemplate.profile_template_id)">{{profileTemplate.name}}</button>
+                                                                        <button class="dropdown-item" *ngFor="let profileTemplate of profilesTemplates" (click)="loadTemplate(profileTemplate.profileTemplateId)">{{profileTemplate.name}}</button>
                                                                         </div>
                                                                     </div>
                                                                 </li>
@@ -221,7 +314,9 @@
                                                                 </li>
                                                             </ul>
                                                         </div>
-                                                        <app-usertemplate [type]="templateType"></app-usertemplate> 
+                                                    
+                                                        <app-usertemplate [type]="templateType"></app-usertemplate>
+                                                    --> 
                                                 </div>
                                                   
                                                 <!--</div>-->

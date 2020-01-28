@@ -81,7 +81,7 @@ export class UsercommitteetemplateComponent  extends AbstractTemplateComponent  
     }
   
     saveProfile(){
-      this.data["profile_template_id"] = this.id;
+      this.data["profileTemplateId"] = this.id;
   
       console.log("Data " + JSON.stringify(this.data));
   

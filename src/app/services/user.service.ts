@@ -8,6 +8,7 @@ import {DatashareService} from '../services/datashare.service';
 import {AbstractService} from './abstract.service';
 
 import {User} from '../models/user';
+import { Connection } from '../models/connection';
 
 // Import RxJs required methods:
 //import 'rxjs/add/operator/map';
@@ -47,26 +48,31 @@ export class UserService extends AbstractService{
   }
 
   getUserData(userId:String, external:boolean):Observable<any> { 
-    /*
-    let groupData = this.http.get('/app/data/json/fromService/group.json')
-                             .map((response:Response) => response.json());
-    console.log("group data " + groupData);
-    return groupData;
-*/
     let url:string;
     
+    if(userId === "CREATE"){ // invoked during page creation
+      	//get available Templates for an user
+    }
+
     //bioguideId is of length 7 - sunfoundataion
     //if(userId.length == 7){
 
-    //legis represent legislator      
+    //legis represent legislator     
+     
     if(external){  
       url = '/assets/json/fromService/user-legis.json';   
     }else{
       url = '/assets/json/fromService/user.json';
     }
+
+
+    url = this.getUserService()+"/"+userId+"/";
+
+    
+
+
     console.log("getUserData() " + url);
-    // return this.http.get(url)
-    //                          .map((response:Response) => response.json());
+    
     return this.http.get(url, this.httpOptions)
     .pipe(
       //map((response:Response) => response.json()), 
@@ -94,8 +100,9 @@ export class UserService extends AbstractService{
   }
 
   followPerson(request:string):Observable<any>{
-    let serviceUrl = this.serviceUrl+"/followPerson";
-    console.log("follow User user.service " + request + " this.serviceUrl " + serviceUrl);
+    let serviceUrl = this.getSocialService();
+    serviceUrl = serviceUrl + "/followPerson";
+    console.log("follow User user.service " + request + " serviceUrl " + serviceUrl);
    //let bodyString = JSON.stringify(post); // Stringify payload
     // let headers      = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
     // let options       = new RequestOptions({ headers: headers }); // Create a request option
@@ -168,21 +175,24 @@ getFollowers(entityId:string):Observable<any>{
   let headers      = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
   let myParams = new HttpParams();
   myParams.append('entityId', entityId);
-/*
-  return this.http.get(serviceUrl, {params: myParams, headers: new HttpHeaders({ 'Content-Type': 'application/json' })})
-  .pipe(
-    //map((response:Response) => response.json()),
-    tap(_ => this.log(`fetched getRelation`)),
-    catchError(this.handleError<any>(`Error in getRelation()`))
-  );                
-*/
 
   return this.http.get(serviceUrl, { responseType: 'json', params: {
     entityId: entityId
   } }).pipe(
-//    map((response:Response) => response.json()),
     tap(_ => this.log(`fetched getFollowers`)),
     catchError(this.handleError<any>(`Error in getFollowers()`))
+  );
+  
+}
+
+getConnectionRequests(entityId:string):Observable<any>{
+  let serviceUrl = this.getSocialService()+"/getConnectionsByStatus"+"/"+entityId+"/";
+
+  return this.http.get(serviceUrl, { responseType: 'json', params: {
+    status: 'REQUESTED'
+  } }).pipe(
+    tap(_ => this.log(`fetched getConnectionRequests`)),
+    catchError(this.handleError<any>(`Error in getConnectionRequests()`))
   );
   
 }
@@ -302,12 +312,40 @@ registerUser(user: User) {
 updateUserSmProfileImage(request:FormData){
   let serviceUrl = this.getUserService() + "/uploadUserSmProfileImage";
   console.log("uploadUserSmProfileImage user.service " + request + " this.serviceUrl " + serviceUrl);
+  
+  this.httpOptions = {
+    headers: new HttpHeaders({ 'Content-Type': 'multipart/form-data'})
+  };
+
+  return this.http.post(serviceUrl,  request )
+  .pipe(
+    map((response:Response) => response.json()),
+    tap(_ => this.log(`User profile image got uploaded successfully`)),
+    catchError(this.handleError<any>(`Error in updateUserSmProfileImage()`))
+  );
+}
+
+updateConnectionAction(request:Connection){
+  let serviceUrl = this.getSocialService()+"/connectionAction";
+  console.log("updateConnectionAction user.service " + request + " serviceUrl " + serviceUrl);
  
   return this.http.post(serviceUrl, request, this.httpOptions)
   .pipe(
     map((response:Response) => response.json()),
-    tap(_ => this.log(`posted updateUserSmProfileImage`)),
-    catchError(this.handleError<any>(`Error in updateUserSmProfileImage()`))
+    tap(_ => this.log(`posted updateConnectionAction`)),
+    catchError(this.handleError<any>(`Error in updateConnectionAction()`))
+  );
+}
+
+updateProfileData(request:any){
+  let serviceUrl = this.getUserService()+"/profileData";
+  console.log("updateProfileData user.service " + request + " serviceUrl " + serviceUrl);
+ 
+  return this.http.put(serviceUrl, request, this.httpOptions)
+  .pipe(
+    map((response:Response) => response.json()),
+    tap(_ => this.log(`posted updateProfileData`)),
+    catchError(this.handleError<any>(`Error in updateProfileData()`))
   );
 }
 
@@ -325,6 +363,8 @@ getImage(userId: string): Observable<Blob> {
 
   return this.http.get(serviceUrl, { responseType: 'blob' });
 }
+
+
 
 
 }

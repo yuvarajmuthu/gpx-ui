@@ -1,9 +1,12 @@
-.legisProfileData{
-    display:inline-block;
-  }
-  
-.office{
-    border: 1px solid lightblue;
-    border-radius: 5px;
+.officeProfileCard {
+    background-color: #fcfcfc;
+    margin-top: 27px;
+    border: solid 1px #666d69;
+}
 
-  }
+.officeProfileCard:before {
+    display: block;
+    background-image: linear-gradient(-272deg,#87eeb2,#666d69);
+    content: '';
+    height: 4px;
+}

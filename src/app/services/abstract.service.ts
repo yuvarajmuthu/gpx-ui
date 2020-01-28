@@ -1,6 +1,11 @@
 import { Observable, of } from 'rxjs';
 
+import { AlertService } from './alert.service';
+
 export class AbstractService {
+
+  //constructor(private alertService: AlertService) { }
+  constructor() { }  
       /**
    * Handle Http operation that failed.
    * Let the app continue.
@@ -21,8 +26,8 @@ export class AbstractService {
     };
   }
  
-  /** Log a HeroService message with the MessageService */
   public log(message: string) {
-    //this.messageService.add(`HeroService: ${message}`);
+    //this.alertService.success(message, true);
+
   }
 }

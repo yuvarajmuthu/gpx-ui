@@ -1,30 +1,19 @@
 import {Component, ViewContainerRef, ViewChild, ElementRef, Renderer, ChangeDetectorRef, ComponentRef, Input, OnInit, isDevMode} from '@angular/core';
 import { Router, ActivatedRoute, Params } from "@angular/router";
-
-// import { TAB_DIRECTIVES } from 'ng2-bootstrap/components/tabs';
-// import { CollapseDirective } from 'ng2-bootstrap/components/collapse';
-// import {RatingComponent} from 'ng2-bootstrap/components/rating';
-// import { DROPDOWN_DIRECTIVES } from 'ng2-bootstrap/components/dropdown';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { Legislator } from '../../../models/legislator';
 import {User} from '../../../models/user'; 
 
-//import {BannerGPXComponent} from './banner.component';
-
-//import {PeopleComponentGPX} from './people.component';
-//import {NdvEditComponent} from './editableText.component';
-//import {LegislatorComponentGPX} from './legislator.component';
-//import {DynamicContentComponent} from './userProfile.template.component';
 import {UsertemplateComponent} from '../usertemplate/usertemplate.component';
-//import {PostComponent} from '../../post/post.component';
 
 import {DatashareService} from '../../../services/datashare.service';
 import {UserService} from '../../../services/user.service';
 import { LegislatorService } from '../../../services/legislator.service';
 import { ComponentcommunicationService }     from '../../../services/componentcommunication.service';
 import { AlertService } from '../../../services/alert.service'; 
+import { stringify } from 'querystring';
 
-//import {TopnavbarComponent} from '../../nav/topnavbar/topnavbar.component';
 
 @Component({
   selector: 'app-user',
@@ -52,11 +41,11 @@ export class UserComponent implements OnInit {
   private firstName;
   private lastName;
   public profilesTemplates = [];
-  public profilesData = [];
+  public profilesDatas = [];
   public isLegislator = false;
   operation:string = "";
   profileImage:string="";
-  profileSmImage:any;
+  profileSmImage:any = "assets/images/avatar1.png";
   bannerImage:any;
   isImageLoading:boolean = false;
   isProfileCollapsed:boolean = false;
@@ -83,7 +72,12 @@ export class UserComponent implements OnInit {
   activitiesTabSelected:boolean = false; 
   isSelfProfile:boolean = false;
 
-  constructor(//private  router: Router,
+  followCntrlLabel:string = "";
+  followCntrlCSS:string="";
+  followStatusCSS:string="";
+  uploadForm: FormGroup;  
+
+  constructor(private  router: Router,
     private route: ActivatedRoute,
     private userService:UserService, 
     private missionService: ComponentcommunicationService, 
@@ -92,7 +86,8 @@ export class UserComponent implements OnInit {
     private legislatorsService:LegislatorService, 
     //private peopleService: PeopleService, 
     //private partyService: PartyService, 
-    private datashareService:DatashareService) {  
+    private datashareService:DatashareService,
+    private formBuilder: FormBuilder) {  
       this.currentUser = this.datashareService.getCurrentUser();  
       
       missionService.userProfileEditChanged$.subscribe(
@@ -131,20 +126,24 @@ export class UserComponent implements OnInit {
 
   ngOnInit(){
     this.route.params.subscribe((params: Params) => {
-      this.paramUsername = params['id'];
+      this.paramUsername = params['id']; 
       console.log("from user.component route params changed " + this.paramUsername);      
       this.loadComponent(this.paramUsername);
 
       this.loggedUser = this.datashareService.getCurrentUser();
     
 
-      if(this.paramUsername === this.loggedUser.username){
+      if(this.loggedUser && this.paramUsername === this.loggedUser.username){
         this.isSelfProfile = true;
       }
 
    });
 
     this.bannerImage = "assets/images/user-banner1.jpg";
+
+    this.uploadForm = this.formBuilder.group({
+      file: ['']
+    });
   }
   
   loadComponent(id:string){
@@ -212,7 +211,14 @@ export class UserComponent implements OnInit {
       //the user that is being viewed
       //this.dataShareService.setViewingUserId(this.profileUserId);
       
-      this.getRelationStatus(this.loggedUser.username, this.profileUserId);
+      if(this.loggedUser && this.loggedUser.username){
+        this.getRelationStatus(this.loggedUser.username, this.profileUserId);
+      }else{
+        this.followCntrlLabel = "Join to Follow";
+        this.followCntrlCSS = "btn btn-primary";
+        this.followStatusCSS = "fa fa-plus-circle";
+      }
+
       this.getFollowersCount(this.profileUserId);
       this.getFollowers(this.profileUserId);
       
@@ -231,33 +237,44 @@ export class UserComponent implements OnInit {
             
             if(this.viewingUser['external']){ // and not persisted
               if(isDevMode()){
-                this.profileSmImage = "assets/images/temp/user-avatar.jpg";
+                this.profileSmImage = "assets/images/avatar1.png";//"assets/images/temp/user-avatar.jpg";
               }else{
                 this.profileSmImage = this.userData["photo_url"];
               }
             }else{
               this.getProfileSmImage(this.viewingUser['userId']);
             } 
+            
             //getting the available profile templates for this user type - publicUser
-            this.profilesTemplates = this.viewingUser['profileTemplates'] = data['profile'];
-            console.log("profile templates: ", this.profilesTemplates);
+            //this.profilesTemplates = this.viewingUser['profileTemplates'] = data['profile']; 
+           // console.log("profile templates: ", this.profilesTemplates);
 
             //getting the data for this user profile
             //this.profilesData = this.viewingUser['profilesData'] = this.userData['profileData'];
-            this.profilesData = this.userData['profileData'];
-            console.log("profile data: ", this.profilesData);
+            this.profilesTemplates = this.userData['profileTemplates'];
+            this.viewingUser['profileTemplates'] = this.profilesTemplates;
+            
+            this.profilesDatas = this.userData['profileDatas'];
+            console.log("profile data: ", this.userData);
 
             //identifying the profile selected for this user profile, so those components shall be loaded
             let compTypes = [];
-            for (let profileData of this.profilesData){
-              console.log("loading template component: ", profileData['profile_template_id']);
+            for (let profileData of this.profilesDatas){
+              console.log("loading template component: ", profileData['profileTemplateId']);
               //this.templateType.push(profileData['profile_template_id']);
-              compTypes.push(profileData['profile_template_id']); 
-              if(profileData['profile_template_id'] === "upCongressLegislatorExternal"){ 
+              if(compTypes.indexOf(profileData['profileTemplateId']) < 0){
+                compTypes.push(profileData['profileTemplateId']);
+                
+                //not required if profiletemplates is retrieved from user
+                //this.profilesTemplates.push(profileData);
+              }  
+  
+              if(profileData['profileTemplateId'] === "upCongressLegislatorExternal" ||
+              profileData['profileTemplateId'] === "upDefault"){ 
                 //let profileItemData = profileData['data'][0];
                 let profileItemData = profileData['data'];
-                this.firstName = profileItemData['firstName'];
-                this.lastName = profileItemData['lastName'];
+                this.firstName = profileItemData['first_name'];
+                this.lastName = profileItemData['last_name'];
 
               }
             }
@@ -305,7 +322,7 @@ export class UserComponent implements OnInit {
 createImageFromBlob(image: Blob) {
   let reader = new FileReader();
   reader.addEventListener("load", () => {
-    this.profileSmImage = reader.result;
+    this.profileSmImage = reader.result; 
   }, false);
 
   if (image) {
@@ -363,6 +380,8 @@ createImageFromBlob(image: Blob) {
     
     if (event.target.files && event.target.files[0]) {
         this.selectedProfileSmImage = event.target.files[0];
+        this.uploadForm.get('file').setValue(this.selectedProfileSmImage);
+
         reader.readAsDataURL(this.selectedProfileSmImage);
         reader.onload = (event) => {
           this.profileSmImage = event.target["result"]; 
@@ -402,23 +421,27 @@ createImageFromBlob(image: Blob) {
 
   saveProfile(){
     console.log("Saving user.component Profile");
-    /*
-    this.missionService.announceMission("{'districtID':'d001'}");
-    this.data["profile_template_id"] = this.id;
-    this.data["user_id"] = this.profileUserId;
-    this.data["data"] = this.getData();
-
-    console.log("Data " + JSON.stringify(this.data));
-    */
    //if image got change, submit that image
    if(this.profileSmImageChanged){
     const uploadFormData = new FormData();
-    uploadFormData.append("file", this.selectedProfileSmImage, this.selectedProfileSmImage.name);
-    uploadFormData.append("user", JSON.stringify(this.viewingUser));
+    let userData:any = {};
+    userData['username'] = this.viewingUser['userId'];
+    //WORKAROUND
+    //PROFILETEMPLATE SHOULD HAVE ONLY profileTemplateId AND NOT profile_template_id
+    if(this.viewingUser['profileTemplates'] && this.viewingUser['profileTemplates'][0]){
+      let profileTemplate:any = {};
+      profileTemplate['profileTemplateId'] = this.viewingUser['profileTemplates'][0]['profile_template_id'];
+      this.viewingUser['profileTemplates'][0] = profileTemplate;
+      userData['profileTemplates'] = this.viewingUser['profileTemplates'];
+
+    }
+    //uploadFormData.append("file", this.selectedProfileSmImage, this.selectedProfileSmImage.name);
+    uploadFormData.append("file", this.uploadForm.get('file').value);
+    uploadFormData.append("post", JSON.stringify(userData));
 
     this.userService.updateUserSmProfileImage(uploadFormData)
     .subscribe(data => {
-
+      console.log("User profile image got uploaded successfully, ", this.viewingUser);
     });
    }
   }
@@ -433,27 +456,43 @@ createImageFromBlob(image: Blob) {
     console.log("TemplateIntroductionComponent data " + dataString);
     return dataString;
   }
-
   
   followEntity(){
+    if(this.loggedUser == null || !this.loggedUser.username){
+      //let routePath:string = "/secure";
+      let routePath:string = "/login";
+//      this.router.navigate([routePath]);
+      let returnUrl:string = "/user/" + this.profileUserId + "?follow";
+      this.router.navigate(['login'], { queryParams: { returnUrl: returnUrl }});
+
+      //this.router.navigate([routePath, {followEntityId:this.profileUserId, isLegislator:this.viewingUser['isLegislator']}]);
+
+    }
 
     var followURequest = {};
     var sourceEntity={};
     var targetEntity={}; 
     
     /*MAY NOT BE REQUIRED - BEGIN */
-    followURequest["userId"] = this.loggedUser.username;// this.datashareService.getCurrentUserId();
+    followURequest["userId"] = this.loggedUser ? this.loggedUser.username : "";// this.datashareService.getCurrentUserId();
     followURequest["connectionUserId"] = this.profileUserId;
     /*MAY NOT BE REQUIRED - END */
 
-    followURequest["sourceEntityId"] = this.loggedUser.username;//this.datashareService.getCurrentUserId();
-    followURequest["sourceEntityType"] = "USER";
+    followURequest["sourceEntityId"] = this.loggedUser ? this.loggedUser.username : "";//this.datashareService.getCurrentUserId();
+    //followURequest["sourceEntityType"] = "USER";
     followURequest["targetEntityId"] = this.profileUserId;
     
     if(this.viewingUser['isLegislator']){
+      /*
+      if(this.viewingUser['isCongress']){
+
+      }else{
+      }
+      */
       followURequest["targetEntityType"] = "LEGISLATOR";
+
     }else{
-      followURequest["targetEntityType"] = "USER";
+      followURequest["targetEntityType"] = "PUBLICUSER";
     }
     followURequest["status"] = "REQUESTED";            
     console.log("Profile data " + JSON.stringify(followURequest));      
@@ -470,11 +509,58 @@ createImageFromBlob(image: Blob) {
           }else if(result.status == "REJECTED"){
             this.followRequestRejected = true; 
           }
+          this.setFollowCntrlLabel();
+          this.setFollowCntrlCSS();
+          this.setFollowStatusCSS();
 
         },
       (err) => {
         console.log("Error ", err);
       });
+  }
+  
+  setFollowCntrlLabel(){
+
+    if(this.requestedToFollow){
+      this.followCntrlLabel = "Request Sent";
+    }else if(this.following){
+      this.followCntrlLabel = "Following";
+    }else if(this.followRequestRejected){
+      this.followCntrlLabel = "Request Rejected";
+    }else{
+      this.followCntrlLabel = "Follow";
+    }
+
+
+  }
+
+  setFollowStatusCSS(){
+
+    if(this.requestedToFollow){
+      this.followStatusCSS = "fa fa-exclamation-circle";
+    }else if(this.following){
+      this.followStatusCSS = "fa fa-check-circle";
+    }else if(this.followRequestRejected){
+      this.followStatusCSS = "fa fa-thumbs-down";
+    }else{
+      this.followStatusCSS = "fa fa-plus-circle";
+    }
+
+
+  }
+
+  setFollowCntrlCSS(){
+
+    if(this.requestedToFollow){
+      this.followCntrlCSS = "btn btn-outline-warning glyphicon glyphicon-ok";
+    }else if(this.following){
+      this.followCntrlCSS = "btn btn-outline-success glyphicon glyphicon-ok";
+    }else if(this.followRequestRejected){
+      this.followCntrlCSS = "btn btn-outline-danger glyphicon glyphicon-ok";
+    }else{
+      this.followCntrlCSS = "btn btn-outline-primary";
+    }
+
   }
 
   test(){
@@ -482,18 +568,22 @@ createImageFromBlob(image: Blob) {
   }
 
   getRelationStatus(entity:string, profileId:string){
+ 
     this.userService.getRelationStatus(entity, profileId)
     .subscribe(
       (result) => {
           console.log("getRelationStatus response " + result);
 
           if(result == "REQUESTED"){
-            this.requestedToFollow = true;
+            this.requestedToFollow = true; 
           }else if(result == "FOLLOWING"){
             this.following = true;
           }else if(result == "REJECTED"){
             this.followRequestRejected = true; 
           }
+          this.setFollowCntrlLabel();
+          this.setFollowCntrlCSS();
+          this.setFollowStatusCSS();
 
         },
       (err) => {

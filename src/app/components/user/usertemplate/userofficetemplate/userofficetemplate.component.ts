@@ -13,6 +13,7 @@ import { LegislatorService } from '../../../../services/legislator.service';
 })
 export class UserofficetemplateComponent extends AbstractTemplateComponent  implements OnInit  {
   id = "upOffices"; 
+  profileIcon = "business";
   //roles:any = null;
   offices:JSON[] = [];
   displayProperties = [];
@@ -48,7 +49,7 @@ export class UserofficetemplateComponent extends AbstractTemplateComponent  impl
     for (let profileTemplates of this.viewingUser['profileTemplates']){
       //console.log("reading template component properties: ", profileTemplates['profile_template_id']);
       //this.templateType.push(profileData['profile_template_id']);
-      if(this.id == profileTemplates['profile_template_id']){
+      if(this.id == profileTemplates['profileTemplateId']){
         this.displayProperties = profileTemplates['properties'];
         break;  
       }
