@@ -24,7 +24,7 @@ export class UserService extends AbstractService{
   resultop:any;
 
   private httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json'})
+    headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Access-Control-Allow-Origin':'http://localhost:4200'})
   };
 
   constructor (private http: HttpClient, 
@@ -287,7 +287,7 @@ getById(id: number) {
   //return this.http.get('/api/users/' + id);
 }
 
-registerUser(user: User) {
+registerUser(user: User):Observable<any> {
 //        return this.http.post('/register', user);
 
     //console.log("registering user user.service");
@@ -309,7 +309,7 @@ registerUser(user: User) {
   //                   .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
 }
 
-updateUserSmProfileImage(request:FormData){
+updateUserSmProfileImage(request:FormData):Observable<any>{
   let serviceUrl = this.getUserService() + "/uploadUserSmProfileImage";
   console.log("uploadUserSmProfileImage user.service " + request + " this.serviceUrl " + serviceUrl);
   
@@ -325,7 +325,7 @@ updateUserSmProfileImage(request:FormData){
   );
 }
 
-updateConnectionAction(request:Connection){
+updateConnectionAction(request:Connection):Observable<any>{
   let serviceUrl = this.getSocialService()+"/connectionAction";
   console.log("updateConnectionAction user.service " + request + " serviceUrl " + serviceUrl);
  
@@ -337,11 +337,11 @@ updateConnectionAction(request:Connection){
   );
 }
 
-updateProfileData(request:any){
-  let serviceUrl = this.getUserService()+"/profileData";
+updateProfileData(request:any):Observable<any>{
+  let serviceUrl = this.getUserService()+"/profileData/update";
   console.log("updateProfileData user.service " + request + " serviceUrl " + serviceUrl);
  
-  return this.http.put(serviceUrl, request, this.httpOptions)
+  return this.http.post(serviceUrl, request, this.httpOptions)
   .pipe(
     map((response:Response) => response.json()),
     tap(_ => this.log(`posted updateProfileData`)),

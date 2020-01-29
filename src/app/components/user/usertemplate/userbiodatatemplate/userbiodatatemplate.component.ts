@@ -166,16 +166,20 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
     }
   
     saveProfile(){
-      this.data["id"] = this.profileDataId;
-      this.data["profileTemplateId"] = this.id;
+      this.data["id"] = this.profileDataId; //primary key
+      this.data["profileTemplateId"] = this.id; //unique key
       this.data["entityId"] = this.profileUserId; // how about for user updating other passive profile ?
       this.data["data"] = this.getFormData();
       console.log("Data " + JSON.stringify(this.data));
-      this.userService2.updateProfileData(this.data).subscribe(
+      this.userService2.updateProfileData(this.data).subscribe((response) => {
+        console.log('Profile updated sucessfully');
+        this.isProfileInEditMode = false;
+        this.biodata = this.data["data"];
+        this.changeDetector.detectChanges();
 
+      } 
       );
 
-      this.isProfileInEditMode = false;
     }
 
     editProfile(){
