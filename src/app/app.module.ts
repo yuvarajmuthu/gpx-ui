@@ -9,7 +9,8 @@ import { JwtModule } from '@auth0/angular-jwt';
 
 import {AuthenticationService} from '../app/services/authentication.service';
 import { AuthGuard } from '../app/auth/auth.guard';
-import {AppHttpInterceptor} from '../app/auth/app-http-interceptor';
+//import {AppHttpInterceptor} from '../app/auth/app-http-interceptor';
+import {MockHttpInterceptorService} from '../app/services/mock/mock-http-interceptor.service';
 
 //import {NgbTabsetModule, NgbDropdownModule, NgbTypeaheadModule} from '@ng-bootstrap/ng-bootstrap';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -104,13 +105,15 @@ export function tokenGetter() {
     // )
   ],
   providers: [
-    //{
-    //provide: HTTP_INTERCEPTORS,
-    //useClass: AppHttpInterceptor,
-    //multi: true
-  //},
+    {
+    provide: HTTP_INTERCEPTORS,
+    useClass: MockHttpInterceptorService,
+    multi: true
+  },
   AuthenticationService,
-  AuthGuard],
+  AuthGuard,
+  //MockHttpInterceptorService
+],
   bootstrap: [AppComponent]
 })
 export class AppModule { 
