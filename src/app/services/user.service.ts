@@ -58,16 +58,18 @@ export class UserService extends AbstractService{
     //if(userId.length == 7){
 
     //legis represent legislator     
-     
-    if(external){  
-      url = '/assets/json/fromService/user-legis.json';   
+    
+    //DEV MODE
+    if(this.devMode){
+      if(external){  
+        url = '/assets/json/fromService/user-legis-LEGISLATOROPENSTATE.json';   
+      }else{
+        url = '/assets/json/fromService/user-public.json';
+      }
     }else{
-      url = '/assets/json/fromService/user.json';
+    //PROD MODE
+      url = this.getUserService()+"/"+userId+"/";
     }
-
-
-    url = this.getUserService()+"/"+userId+"/";
-
     
 
 
@@ -198,8 +200,12 @@ getConnectionRequests(entityId:string):Observable<any>{
 }
 
 getBiodata(userId:string, userType:string):Observable<any>{ 
-  let serviceUrl = this.getUserService() +"/legis/biodata/"+userId+"/";    
-
+  let serviceUrl:string = "";//    
+  if(this.devMode){
+    serviceUrl = '/assets/json/fromService/user-legis-Biodata.json';   
+  }else{
+    serviceUrl = this.getUserService() +"/legis/biodata/"+userId+"/";
+  }    
 
   //let headers      = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
   this.httpOptions = {
@@ -214,7 +220,12 @@ getBiodata(userId:string, userType:string):Observable<any>{
 }
 
 getRoles(userId:string, isCongress:boolean):Observable<any>{ 
-  let serviceUrl = this.getUserService() +"/legisv1/congress/roles/"+userId;
+  let serviceUrl:string = "";//    
+  if(this.devMode){
+    serviceUrl = '/assets/json/fromService/user-legis-Roles.json';   
+  }else{
+    serviceUrl = this.getUserService() +"/legisv1/congress/roles/"+userId;
+  }
 
   let headers      = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
   return this.http.get(serviceUrl, this.httpOptions)
@@ -226,8 +237,12 @@ getRoles(userId:string, isCongress:boolean):Observable<any>{
 }
 
 getOffices(userId:string, isCongress:boolean):Observable<any>{ 
-  
-  let serviceUrl = this.getUserService() +"/legisv1/congress/offices/"+userId;
+  let serviceUrl:string = "";//    
+  if(this.devMode){
+    serviceUrl = '/assets/json/fromService/user-legis-Offices.json';   
+  }else{ 
+    serviceUrl = this.getUserService() +"/legisv1/congress/offices/"+userId;
+  }
 
   let headers      = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
   return this.http.get(serviceUrl, this.httpOptions)
