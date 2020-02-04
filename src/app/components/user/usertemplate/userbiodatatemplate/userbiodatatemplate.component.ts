@@ -105,7 +105,7 @@ export class UserbiodatatemplateComponent extends AbstractTemplateComponent  imp
   }
     
     loadDisplayProperties(){ 
-      for (let profileTemplates of this.viewingUser['profileTemplates']){
+      for (let profileTemplates of this.viewingUser['profileTemplates']){ 
         //console.log("reading template component properties: ", profileTemplates['profile_template_id']);
         //this.templateType.push(profileData['profile_template_id']);
         if(this.id == profileTemplates['profileTemplateId']){
