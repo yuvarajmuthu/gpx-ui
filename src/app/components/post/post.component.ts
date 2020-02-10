@@ -9,7 +9,7 @@ import {Post} from '../../models/post';
 //import {BannerGPXComponent} from './banner.component';
 //import {PostCardGPX} from './postCard.component'; 
 
-import { Observable, of } from 'rxjs';
+import { interval } from 'rxjs';
 
 @Component({
   selector: 'app-post',
@@ -36,19 +36,26 @@ export class PostComponent implements OnInit {
       
       entityId=this.groupId;
     }else if(this.type == "user"){
-      entityId=this.dataShareService.currentUserId; 
+      entityId=this.dataShareService.getLoggedinUsername(); 
+    }else{
+      entityId=this.dataShareService.getLoggedinUsername(); 
     }
 
     console.log("Activities for " + entityId);
-    this.getPost(entityId, this.type);
+    /*
+    interval(5000).subscribe(
+      (val) => { this.getPost(entityId);
+    });
+    */
+    this.getPost(entityId);
 
   }
 
 
-  getPost(entityId:string, entityType:string):void{
+  getPost(entityId:string):void{
     var getPostRequest = {};      
     getPostRequest["entityId"] = entityId;
-    getPostRequest["entityType"] = entityType;
+    //getPostRequest["entityType"] = entityType;
 
     this.postService.getActivities(JSON.stringify(getPostRequest)).subscribe((result) => 
     {

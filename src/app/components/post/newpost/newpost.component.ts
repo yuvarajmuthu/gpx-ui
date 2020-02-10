@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 
 import {GpxFileuploadComponent} from '../../gpx-uicomponents/gpx-fileupload/gpx-fileupload.component';
@@ -40,7 +40,10 @@ export class NewpostComponent implements OnInit {
     //clearInput:boolean = false;
   
   
-    constructor(private postService: PostService, private dataShareService:DatashareService) {  
+    constructor(private postService: PostService, 
+      private dataShareService:DatashareService,
+      private changeDetector : ChangeDetectorRef
+      ) {  
         // this.form = this.fb.group({
         //   stageUploadedImgFile: null
         // });
@@ -86,36 +89,9 @@ export class NewpostComponent implements OnInit {
     }
 
     submitPost(){
-      //console.log("posting the comment " + text);
-  
-  /*    let posts:string;
-  
-      if(posts = localStorage.getItem("userPosts")){
-        console.log('Existing posts ' + posts);
-        let postObj = {};
-        let json = [];  
-  
-        postObj = JSON.parse(posts);
-        json = postObj['postArray'];
-  
-        let post:string;
-  
-        post = '{ "txtPost":'+ JSON.stringify(this.txtPost) +'}';
-        json.push(JSON.parse(post));
-        
-        postObj['postArray'] = json;
-  
-        localStorage.setItem("userPosts", JSON.stringify(postObj));
-        console.log('localStorage posts ' + localStorage.getItem("userPosts"));
-      } else{
-        console.log('adding new post in localstorage - ' + this.txtPost);
-        localStorage.setItem("userPosts", JSON.stringify({'postArray':[{ 'txtPost': this.txtPost}]}));
-      } 
-  */
-      //
-      let currentUser = this.dataShareService.getCurrentUser();
-      this.post.userId = currentUser['userId'];//this.dataShareService.getCurrentUserId();
-      this.post.districtId = this.dataShareService.getCurrentDistrictId();
+
+      this.post.entityId = this.dataShareService.getLoggedinUsername();
+      //this.post.districtId = this.dataShareService.getCurrentDistrictId();
       this.post.postText = this.txtPost;
   
       if(this.parentPost != null){
@@ -135,6 +111,8 @@ export class NewpostComponent implements OnInit {
           this.hideInput = true; // should be inside subscribe()
        }else{
          this.txtPost = '';
+         this.stagingImage = null;
+         //this.changeDetector.detectChanges();
        }  
  
       });

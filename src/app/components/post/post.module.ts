@@ -8,6 +8,7 @@ import { NewpostComponent } from './newpost/newpost.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {GpxUIComponentsModule} from '../gpx-uicomponents/gpx-uicomponents.module';
 import {BannerComponent} from '../banner/banner.component';
+import {dateFormatPipe} from '../../util/pipes/dateformat.pipe';
 
 @NgModule({
   imports: [
@@ -19,7 +20,7 @@ import {BannerComponent} from '../banner/banner.component';
   ],
   declarations: [
     //BannerComponent, 
-    PostComponent, PostcardComponent, NewpostComponent
+    PostComponent, PostcardComponent, NewpostComponent, dateFormatPipe
   ],
   exports:[PostComponent] 
 }) 

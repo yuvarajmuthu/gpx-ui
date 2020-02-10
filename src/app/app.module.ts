@@ -34,6 +34,7 @@ import { PartyComponent } from './components/party/party.component';
 import { ProtectedComponent } from './components/protected/protected.component';
 import { GAddressSearchComponent } from './components/g-address-search/g-address-search.component';
 
+import {dateFormatPipe} from './util/pipes/dateformat.pipe';
 //import {UserComponent} from './components/user/user/user.component';
 
 //import { GpxInputComponent } from './gpx-input/gpx-input.component';
@@ -68,6 +69,7 @@ export function tokenGetter() {
     PartyComponent,
     ProtectedComponent,
     GAddressSearchComponent,
+    //dateFormatPipe
     //UserComponent
     //GpxInputComponent,
   ],
@@ -105,13 +107,15 @@ export function tokenGetter() {
     // )
   ],
   providers: [
+    /* ENABLE IT FOR MOCKING - OFFLINE OPERATION
     {
     provide: HTTP_INTERCEPTORS,
     useClass: MockHttpInterceptorService,
     multi: true
-  },
+  },*/
   AuthenticationService,
   AuthGuard,
+  //dateFormatPipe
   //MockHttpInterceptorService
 ],
   bootstrap: [AppComponent]

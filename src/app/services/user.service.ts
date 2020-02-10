@@ -161,7 +161,12 @@ export class UserService extends AbstractService{
 }
 
 getFollowersCount(entityId:string):Observable<string>{
-  let serviceUrl = this.getSocialService()+"/getFollowersCount";
+  let serviceUrl = "";
+  if(this.devMode){
+    serviceUrl = '/assets/json/fromService/followersCount.json';   
+  }else{
+    serviceUrl = this.getSocialService()+"/getFollowersCount";
+  }
 
   let headers      = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
 
@@ -172,8 +177,12 @@ getFollowersCount(entityId:string):Observable<string>{
 }
 
 getFollowers(entityId:string):Observable<any>{
-  let serviceUrl = this.getSocialService()+"/getFollowers";
-
+  let serviceUrl = "";
+  if(this.devMode){
+    serviceUrl = '/assets/json/fromService/followers.json';   
+  }else{
+    serviceUrl = this.getSocialService()+"/getFollowers";
+  }
   let headers      = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
   let myParams = new HttpParams();
   myParams.append('entityId', entityId);

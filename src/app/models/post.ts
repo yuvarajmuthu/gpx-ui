@@ -1,37 +1,19 @@
 export class Post {
 	constructor(
 		public id:string,
+		public entityId:string,
 		public parentPostId:string,		
 		public userId: string,
-		public postText: string,
-		public postType:string,
+		public postText: string, 
+		public postCategory:string,
 		public imageUrl:string,
 		public videoUrl:string,
 		public districtId:string,
 		public likedBy:string[],
 		public likedByCurrentUser:boolean,
-		public messageType:string,
+		public postType:string, // OBSOLETE
 		public imageFile:File
 	){}
-/*
-	static decodePost(json: JSON): Post {
-	  return {
-	    id:    json["_id"],
-	    parentPostId: json["parent_post_id"],
-	    userId:     json["userId"],
-	    postText: json["postText"],
-	    postType:    json["postType"],
-	    imageUrl:    json["imageUrl"],
-	    videoUrl:    json["videoUrl"],
-	    districtId:    json["districtId"]
-	    //,likedBy:json["likedBy"],
-	    //likedByCurrentUser:json["likedByCurrentUser"]
-	    ,likedBy:["u00l"],
-			likedByCurrentUser:true,
-			messageType:json["messageType"]
-	  };
-	}
-	*/
 }	
 
 interface PostJSON {

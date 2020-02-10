@@ -1,6 +1,8 @@
-import {Component, OnInit, Input} from '@angular/core';
+import {Component, OnInit, Input, isDevMode} from '@angular/core';
+//import { formatDate } from "@angular/common";
 
 import {PostService} from '../../../services/post.service';
+import {UserService} from '../../../services/user.service';
 import {DatashareService} from '../../../services/datashare.service';
 
 import {Post} from '../../../models/post';
@@ -14,19 +16,43 @@ import {Post} from '../../../models/post';
 export class PostcardComponent implements OnInit {
   @Input() post: Post;
   commentPost:boolean = false;
+  devMode:boolean = true;
 
-  constructor(private postService: PostService, private dataShareService:DatashareService) {
+  profileSmImage:any = "assets/images/avatar1.png";
+  isImageLoading:boolean = false;
+  postImage:any = "assets/images/avatar1.png";
+  isPostImageLoading:boolean = false;
+  entityId:string;
+
+  constructor(private postService: PostService, 
+    private dataShareService:DatashareService,
+    private userService:UserService) {
+      this.devMode = isDevMode();
+
   }
 
   ngOnInit(): void {
-    if(this.post.messageType.indexOf("V") !== -1){
-      this.post["containsVideo"] = true;
+    ////Get entity image
+    if(this.post.postType){
+      if(this.post.postType.indexOf("V") !== -1){ 
+        this.post["containsVideo"] = true;
+      }
+      if(this.post.postType.indexOf("I") !== -1){
+        this.post["containsImage"] = true;
+        if(!this.devMode){
+          this.getPostImage(this.post["relatedFiles"][0]);
+        }
+        //TODO 
+        //Get image
+      }
+      if(this.post.postType.indexOf("T") !== -1){
+        this.post["containsText"] = true;
+      }
     }
-    if(this.post.messageType.indexOf("I") !== -1){
-      this.post["containsImage"] = true;
-    }
-    if(this.post.messageType.indexOf("T") !== -1){
-      this.post["containsText"] = true;
+    this.entityId=this.dataShareService.getLoggedinUsername(); 
+
+    if(!this.devMode){
+      this.getProfileSmImage(this.entityId);
     }
   }
   
@@ -51,5 +77,49 @@ export class PostcardComponent implements OnInit {
   loadMoreComments(id:string){ 
     console.log("Loading More Post Comments for ", id);
     return false;
+  }
+
+  getProfileSmImage(userId:string) {
+    this.isImageLoading = true;
+    this.userService.getImage(userId).subscribe(data => {
+      this.createImageFromBlob(data);
+      this.isImageLoading = false;
+    }, error => {
+      this.isImageLoading = false;
+      console.log(error);
+    });
+  } 
+
+  createImageFromBlob(image: Blob) {
+    let reader = new FileReader();
+    reader.addEventListener("load", () => {
+      this.profileSmImage = reader.result; 
+    }, false);
+  
+    if (image) {
+      reader.readAsDataURL(image);
+    }
+  }
+
+  getPostImage(imageId:string) {
+    this.isPostImageLoading = true;
+    this.postService.getImage(imageId).subscribe(data => {
+      this.createPostImageFromBlob(data);
+      this.isPostImageLoading = false;
+    }, error => {
+      this.isPostImageLoading = false;
+      console.log(error);
+    });
+  } 
+
+  createPostImageFromBlob(image: Blob) {
+    let reader = new FileReader();
+    reader.addEventListener("load", () => {
+      this.postImage = reader.result; 
+    }, false);
+  
+    if (image) {
+      reader.readAsDataURL(image);
+    }
   }
 }

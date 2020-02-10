@@ -12,7 +12,6 @@
       -->
       <div class="newpst-input">
         <img [src]="stagingImage" id="stageUploadedImgFile" alt=""> 
-        <form method="post">
           <textarea rows="2" placeholder="You can share the happenings around you !" [(ngModel)]='txtPost'  (change)="doTextareaValueChange($event)"></textarea>
           <div class="attachments"> 
             <ul> 
@@ -22,7 +21,7 @@
                   <input type="file" id="stageUploadedFile" (change)="onFileSelected($event)"> 
                 </label>
               </li>
-              <li>
+              <li> 
                 <i class="fa fa-video-camera"></i>
                 <label class="fileContainer">
                   <input type="file">
@@ -33,7 +32,6 @@
               </li>
             </ul>
           </div>
-        </form>
       </div>
     </div>
   </div>

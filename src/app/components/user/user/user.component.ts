@@ -9,6 +9,8 @@ import {UsertemplateComponent} from '../usertemplate/usertemplate.component';
 
 import {DatashareService} from '../../../services/datashare.service';
 import {UserService} from '../../../services/user.service';
+import {ProfileService} from '../../../services/profile.service';
+
 import { LegislatorService } from '../../../services/legislator.service';
 import { ComponentcommunicationService }     from '../../../services/componentcommunication.service';
 import { AlertService } from '../../../services/alert.service'; 
@@ -41,6 +43,7 @@ export class UserComponent implements OnInit {
   private firstName;
   private lastName;
   public profilesTemplates = [];
+  public availableProfileTemplates = [];
   public profilesDatas = [];
   public isLegislator = false;
   operation:string = "";
@@ -76,10 +79,11 @@ export class UserComponent implements OnInit {
   followCntrlCSS:string="";
   followStatusCSS:string="";
   uploadForm: FormGroup;  
-
+  compTypeTabs = [];
   constructor(private  router: Router,
     private route: ActivatedRoute,
     private userService:UserService, 
+    private profileService:ProfileService,
     private missionService: ComponentcommunicationService, 
     //private elementRef:ElementRef, 
     //private renderer: Renderer, 
@@ -254,6 +258,12 @@ export class UserComponent implements OnInit {
             this.profilesTemplates = this.userData['profileTemplates'];
             this.viewingUser['profileTemplates'] = this.profilesTemplates;
             
+            let userType:string = this.viewingUser['isLegislator'] ? 'legislator' : 'public';
+            this.profileService.getAvailableProfileTemplates(userType).subscribe(
+              data => {
+                this.availableProfileTemplates = data;
+              });
+
             this.profilesDatas = this.userData['profileDatas'];
             console.log("profile data: ", this.userData);
 
@@ -694,10 +704,32 @@ createImageFromBlob(image: Blob) {
       return permission;
   }
 
-//load the template based on user selection
+//load the template based on tab selection
   loadTemplate(type:string){
     let compTypes = [];
     compTypes.push(type);
     this.templateType = compTypes;
+  }
+
+//add the template based on user selection
+  addTemplate(profileTemplateParam:any){
+/*
+    let profileTemplate = {
+      "profileTemplateId":profileTemplateId,
+      "name":"Biodata"
+    }; 
+  */
+    let position:number = -1;
+    this.availableProfileTemplates.forEach( (profileTemplate, index) => {
+      if(profileTemplateParam['profileTemplateId'] === profileTemplate['profileTemplateId']){
+        position = index;
+      }
+   });
+
+   if(position > -1){
+    this.availableProfileTemplates.splice(position, 1);
+   }
+
+    this.profilesTemplates.push(profileTemplateParam);
   }
 }

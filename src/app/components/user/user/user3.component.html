@@ -239,7 +239,7 @@
                                                                     </a>
                                                                 </li>
                                                             
-                                                                <!--
+                                                                <!-- 
                                                                 <li class="nav-item">
                                                                     <a class="nav-link active" href="#bio_data" data-toggle="tab">
                                                                         <i class="material-icons">person</i>
@@ -264,7 +264,7 @@
                                                                     <div ngbDropdown class="d-inline-block">
                                                                         <button class="btn btn-outline-primary" id="dropdownAddSection" ngbDropdownToggle>Add Section</button>
                                                                         <div ngbDropdownMenu aria-labelledby="dropdownAddSection">
-                                                                        <button class="dropdown-item" *ngFor="let profileTemplate of profilesTemplates" (click)="loadTemplate(profileTemplate.profileTemplateId)">{{profileTemplate.name}}</button>
+                                                                        <button class="dropdown-item" *ngFor="let profileTemplate of availableProfileTemplates" (click)="addTemplate(profileTemplate)">{{profileTemplate.name}}</button>
                                                                         </div>
                                                                     </div>
                                                                 </li>

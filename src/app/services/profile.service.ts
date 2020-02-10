@@ -32,14 +32,7 @@ export class ProfileService extends AbstractService{
       let serviceUrl = this.serviceUrl + "/getProfileTemplate/" + profileTemplateId;
       console.log("getProfileTemplateData profile.service this.serviceUrl " + serviceUrl);
       let headers      = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
-//      let options       = new RequestOptions({ headers: headers }); // Create a request option
 
-      // return this.http.get(serviceUrl, options) // ...using post request
-      //                  .map((res:Response) => res.json()) // ...and calling .json() on the response to return data
-      //                  .catch((error:any) => {
-      //                    console.error('UI error handling' + JSON.stringify(error));
-      //                    return Observable.throw(error.json().error || 'Server error')
-      //                  });
       return this.http.get(serviceUrl, this.httpOptions)
       .pipe(
         //map((response:Response) => response.json()), 
@@ -48,5 +41,16 @@ export class ProfileService extends AbstractService{
       );                            
   }
 
+  getAvailableProfileTemplates(userType:string):Observable<any> {    
+    let serviceUrl = this.serviceUrl + "/getAllProfileTemplates";
+    console.log("getAvailableProfileTemplates profile.service this.serviceUrl " + serviceUrl);
+    
+    return this.http.get(serviceUrl, { responseType: 'json', params: {
+      userType: userType
+    } }).pipe(
+      tap(_ => this.log(`fetched getAvailableProfileTemplates`)),
+      catchError(this.handleError<any>(`Error in getAvailableProfileTemplates()`))
+    );
+}
 
 }

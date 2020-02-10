@@ -2,17 +2,18 @@
 	<div class="user-post">
 		<div class="friend-info"> 
 			<figure>
-				<!--IMAGE OF ENTITY WHO POSTED THIS POST-->	
-				<img src="assets/images/yeoman.png" alt="">
+				<!--IMAGE OF ENTITY WHO POSTED THIS POST	
+				<img src="assets/images/yeoman.png" alt="">-->
+				<img [src]="profileSmImage" alt="">
 			</figure>
 			<div class="friend-name">
 				<!--clicking this link will navigate to Entity profile-->
-				<ins><a href="#" title="">{{post.userId}}</a></ins>
-				<span>published: june,2 2018 19:PM</span>
+				<ins><a href="#" title="">{{post.entityId}}</a></ins>
+				<span>published: {{post.createdDate | dateFormatPipe}}</span>
 			</div> 
 			<div *ngIf="post.containsImage" class="post-meta">
 					<!-- Show image only if post contains an image -->
-					<img src="assets/images/yeoman.png" alt="">
+					<img [src]="postImage" alt="">
 			</div>					
 			<div *ngIf="post.containsVideo" class="post-meta">
 				<div class="we-video-info">
