@@ -1,159 +1,51 @@
-<!-- 
-https://getbootstrap.com/docs/4.2/components/navbar/
-version 4.2.1
--->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">
-    <!--
-    <i class="ti ti-flag-alt-2"></i>
-    -->
-    <img class="brand-img" src="assets/images/gpx-brand-v1.png" alt="">      
-    <img src="assets/images/logo/logonew.png" alt="">
-  </a>
-    
-  <button class="navbar-toggler" type="button" (click)="isCollaped = !isCollaped" [attr.aria-expanded]="!isCollaped" aria-controls="navbarTogglerDemo-01" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
-  <div class="collapse navbar-collapse" id="navbarTogglerDemo-01" [ngbCollapse]="isCollaped">
-    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-        <li class="nav-item">
-            <button type="button" class="btn btn-outline-primary" (click)="route('searchLegislator')">Legislator</button>
-          </li>
-          <li class="nav-item">
-              <button type="button" class="btn btn-outline-warning" (click)="route('news')">News</button>
-          </li>       
-          <li class="nav-item">
-              <button type="button" class="btn btn-outline-danger" (click)="route('group')">District</button>
-          </li>
-          
-          <li class="nav-item">
-            <button type="button" class="btn btn-outline-danger" (click)="route('request')">
-              <i class="ti ti-bell">Connection Requests</i>
-            </button>            
-        </li>
-        
-    </ul>       
-<!--
-    <div *ngIf="isUserLogged">      
-          <i class="fa fa-user"></i>
-          <a class="" [routerLink]="" title="" data-ripple="" (click)="loadUser()"></a>                
-    </div>
--->
-<!--
- 		<div class="user-img">
-    <ul class="navbar-nav ml-auto nav-flex-icons" *ngIf="isUserLogged">
-        <li class="nav-item avatar">
-          <a id="dropdownBasic2" class="nav-link p-0" [routerLink]="" (click)="loadUser()">
-            <img src="https://mdbootstrap.com/img/Photos/Avatars/avatar-5.jpg" class="rounded-circle z-depth-0 gpx-avatar"
-              alt="avatar image">
-            </a>
-        </li>
-        
-    </ul>
-    </div>
-    <form class="form-inline my-2 my-lg-0">
-      <button *ngIf="!isUserLogged" class="btn btn-outline-warning my-2 my-sm-0" type="submit" (click)="route('register')">Register</button>
-      <button *ngIf="!isUserLogged" class="btn btn-outline-success my-2 my-sm-0" type="submit" (click)="route('login')">Login</button>
-      <button *ngIf="isUserLogged" class="btn btn-outline-success my-2 my-sm-0" type="submit" (click)="logout()">Logout</button>      
-    </form>
-  -->
-  </div>
-<!--
-  <div class="btn-group mr-3">
-    <button type="button" class="btn btn-outline-warning" (click)="loadUser()">
-        <img [src]="profileSmImage" class="rounded-circle z-depth-0 gpx-avatar"
-          alt="avatar image"> 
-
-    </button>
-    <div class="btn-group" ngbDropdown role="group" aria-label="Button group with nested dropdown">
-      <button class="btn btn-outline-warning dropdown-toggle-split" ngbDropdownToggle></button>
-    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-      <button *ngIf="!isUserLogged" class="dropdown-item" type="submit" (click)="route('register')">Register</button>
-      <button *ngIf="!isUserLogged" class="dropdown-item" type="submit" (click)="route('login')">Login</button>
-      <button *ngIf="isUserLogged" class="dropdown-item" type="submit" (click)="logout()">Logout</button>      
-    </div>
-    </div>
-  </div>
--->
-  <ng-template #popContent>
-    <div class="list-group">
-      <button *ngIf="!isUserLogged" class="btn btn-outline-warning list-group-item" type="submit" (click)="route('register')">Register</button>
-      <button *ngIf="!isUserLogged" class="btn btn-outline-warning list-group-item" type="submit" (click)="route('login')">Login</button>
-      <button *ngIf="isUserLogged" class="btn btn-outline-warning list-group-item" type="submit" (click)="loadUser()">View Profile</button>      
-      <button *ngIf="isUserLogged" class="btn btn-outline-warning list-group-item" type="submit" (click)="logout()">Logout</button>      
-    </div> 
-
-  </ng-template>
-
-  <button type="button" class="btn btn-outline-secondary mr-2" placement="bottom"
-  [ngbPopover]="popContent" popoverTitle="">
-    <img [src]="profileSmImage" class="rounded-circle z-depth-0 gpx-avatar"
-    alt="avatar image"> 
-  </button>
-<!--
-  <div ngbDropdown class="d-inline-block">
-    <a ngbDropdownToggle class="nav-link p-0" [routerLink]="" (click)="loadUser()">    
-    <img [src]="profileSmImage" class="rounded-circle z-depth-0 gpx-avatar"
-      alt="avatar image"> 
-    </a>
-
-    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-      <button *ngIf="!isUserLogged" class="dropdown-item" type="submit" (click)="route('register')">Register</button>
-      <button *ngIf="!isUserLogged" class="dropdown-item" type="submit" (click)="route('login')">Login</button>
-      <button *ngIf="isUserLogged" class="dropdown-item" type="submit" (click)="logout()">Logout</button>      
-    </div>
-  </div>
-  -->
-  <!--
-  <div ngbDropdown class="d-inline-block">
-    <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Create Page</button>
-    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-      <button class="dropdown-item" >Create District</button>
-      <button class="dropdown-item" >Create Legislator</button>
-      <button class="dropdown-item" >Create User</button>
-      <button class="dropdown-item" >Create Party</button>
-    </div>
-  </div>
--->
-    <!--
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <nav class="navbar navbar-light bg-light">
-            <form class="form-inline">
-              <div class="input-group">
-                  <app-typeahead></app-typeahead>
-                </div>
+<nav class="navbar navbar-expand-lg navbar-light fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand mylogo" href="#"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" routerLink="searchLegislator"><i class="fa fa-home"></i> Legislator</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="news"><i class="fa fa-edit"></i> News</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="group"><i class="fa fa-bell"></i> District</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="request"><i class="fa fa-bell"></i> Connection Requests</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0 col-md-5">
+                <input class="myform-control mr-sm-2" type="search" placeholder="Search GoPolitix" aria-label="Search">
+                <button class="btn btn-light"><i class="fa fa-search"></i></button>
             </form>
-          </nav>
-      </li>
-    </ul>
-  -->
-  <!--
-    <div class="col text-right" *ngIf="isUserLogged">
-      <div ngbDropdown class="d-inline-block">
-        <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Create Page</button>
-        <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-          <button class="dropdown-item" (click)="createPage('District')">Create District</button>
-          <button class="dropdown-item" (click)="createPage('Legislator')">Create Legislator</button>
-          <button class="dropdown-item" (click)="createPage('User')">Create User</button>
-          <button class="dropdown-item" (click)="createPage('Party')">Create Party</button>
+            <ul class="navbar-nav ml-auto">
+                <li class="avatar-profile d-none d-sm-block ">
+                    <a href="javascript:void(0);" [ngbPopover]="popContent" ><img src="../assets/images/avatar1.png"
+                                     class="img-responsive"/></a>
+                </li>
+                <ng-template #popContent>
+                    <div class="list-group">
+                        <button *ngIf="!isUserLogged" class="btn btn-outline-warning list-group-item" type="submit" (click)="route('register')">Register</button>
+                        <button *ngIf="!isUserLogged" class="btn btn-outline-warning list-group-item" type="submit" (click)="route('login')">Login</button>
+                        <button *ngIf="isUserLogged" class="btn btn-outline-warning list-group-item" type="submit" (click)="loadUser()">View Profile</button>
+                        <button *ngIf="isUserLogged" class="btn btn-outline-warning list-group-item" type="submit" (click)="logout()">Logout</button>
+                    </div>
+                </ng-template>
+            </ul>
         </div>
-      </div>
     </div>
--->
-    
 </nav>
-<!-- VIEW AREA -->
-<div class="container">
-
-  
-
- <!-- view area -->
- <div class="wrapper">
-     <app-alert dismissOnTimeout="5000"></app-alert>
-
-     <router-outlet></router-outlet>
- </div>
-
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <app-alert dismissOnTimeout="5000"></app-alert>
+            <router-outlet></router-outlet>
+        </div>
+    </div>
 </div>
