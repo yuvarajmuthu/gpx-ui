@@ -35,6 +35,7 @@ import { ProtectedComponent } from './components/protected/protected.component';
 import { GAddressSearchComponent } from './components/g-address-search/g-address-search.component';
 
 import {dateFormatPipe} from './util/pipes/dateformat.pipe';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 //import {UserComponent} from './components/user/user/user.component';
 
 //import { GpxInputComponent } from './gpx-input/gpx-input.component';
@@ -80,8 +81,8 @@ export function tokenGetter() {
     HttpClientJsonpModule,
     FormsModule,
     //ReactiveFormsModule, // formGroup
-     //NgbTabsetModule, 
-     //NgbDropdownModule, 
+     //NgbTabsetModule,
+     //NgbDropdownModule,
      //NgbTypeaheadModule,
     //HttpModule,
     NgbModule,
@@ -100,19 +101,20 @@ export function tokenGetter() {
     PostModule,
     UserModule,
     GpxUIComponentsModule,
-    ConnectionModule
+    ConnectionModule,
+    BrowserAnimationsModule
     // RouterModule.forRoot(
     //   appRoutes,
     //   { enableTracing: true } // <-- debugging purposes only
     // )
   ],
   providers: [
-    /* ENABLE IT FOR MOCKING - OFFLINE OPERATION
+    //ENABLE IT FOR MOCKING - OFFLINE OPERATION
     {
     provide: HTTP_INTERCEPTORS,
     useClass: MockHttpInterceptorService,
     multi: true
-  },*/
+  },
   AuthenticationService,
   AuthGuard,
   //dateFormatPipe
@@ -120,6 +122,6 @@ export function tokenGetter() {
 ],
   bootstrap: [AppComponent]
 })
-export class AppModule { 
+export class AppModule {
 
 }
